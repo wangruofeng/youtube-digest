@@ -46,6 +46,33 @@ header {
   gap: 16px;
 }
 
+.github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--muted);
+  transition: border-color 0.16s ease, color 0.16s ease,
+    background 0.16s ease;
+}
+
+.github-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.github-link:focus-visible {
+  outline: 3px solid var(--accent-dim);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+
 .language-control {
   appearance: none;
   border: 1px solid #e8ddd0;

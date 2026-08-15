@@ -20,6 +20,7 @@ const YTD_OPTIONS = (() => {
       translationLanguagesHelp:
         "New transcript requests use the selected original language. Translations and their cache are kept separately for each language pair.",
       heading: "Bring your own API keys",
+      githubLinkTitle: "View source on GitHub",
       lede:
         "Keys stay in this Chrome profile and are sent only to Supadata and DeepSeek. This open-source extension has no developer server or analytics.",
       transcriptProvider: "Transcript provider",
@@ -88,6 +89,7 @@ const YTD_OPTIONS = (() => {
       translationLanguagesHelp:
         "新的字幕请求会使用所选原文语言；每种语言组合的翻译和缓存会独立保存。",
       heading: "使用你自己的 API 密钥",
+      githubLinkTitle: "在 GitHub 上查看源码",
       lede:
         "密钥仅保存在当前 Chrome 个人资料中，只会发送给 Supadata 和 DeepSeek。本开源扩展没有开发者服务器，也不使用分析服务。",
       transcriptProvider: "字幕服务",
