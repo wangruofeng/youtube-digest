@@ -1084,6 +1084,27 @@ function wireOverviewRetryButtons(container) {
 }
 
 /**
+ * Updates one already-rendered overview segment after its translation changes.
+ * Rebuilding the whole Overview list for each concurrent response resets card
+ * animations and causes the visible panel to jump.
+ */
+function updateOverviewSegment(sourceSegment) {
+  const segment = document.querySelector(
+    `[data-overview-segment="${sourceSegment.id}"]`,
+  );
+  if (!segment) return;
+
+  const cacheKey = overviewTranslationCacheKey(sourceSegment.id);
+  segment.innerHTML = renderOverviewSegmentHtml(
+    sourceSegment.text,
+    overviewTranslationCache.get(cacheKey),
+    overviewSegmentErrors.get(cacheKey),
+    currentOverviewMode,
+  );
+  wireOverviewRetryButtons(segment);
+}
+
+/**
  * Renders the analysis results into the Overview tab.
  * Shows chapters and key quotes only, in the active overview language mode.
  */
@@ -1105,13 +1126,13 @@ function renderAnalysisResults(analysis) {
     li.innerHTML = `
       <span class="chapter-timestamp">${escapeHtml(chapter.timestamp)}</span>
       <div class="chapter-content">
-        <span class="chapter-title">${renderOverviewSegmentHtml(
+        <span class="chapter-title" data-overview-segment="chapter-${index}-title">${renderOverviewSegmentHtml(
           chapter.title,
           overviewTranslationCache.get(titleKey),
           overviewSegmentErrors.get(titleKey),
           currentOverviewMode,
         )}</span>
-        <span class="chapter-summary">${renderOverviewSegmentHtml(
+        <span class="chapter-summary" data-overview-segment="chapter-${index}-summary">${renderOverviewSegmentHtml(
           chapter.summary || "",
           overviewTranslationCache.get(summaryKey),
           overviewSegmentErrors.get(summaryKey),
@@ -1150,7 +1171,7 @@ function renderAnalysisResults(analysis) {
     div.dataset.seconds = quote.timestampSeconds;
     div.style.setProperty("--reveal-i", `${sortedQuotes.indexOf(quote) * 45}ms`);
     div.innerHTML = `
-      <div class="quote-text">${renderOverviewSegmentHtml(
+      <div class="quote-text" data-overview-segment="quote-${keyQuotes.indexOf(quote)}">${renderOverviewSegmentHtml(
         quote.quote,
         overviewTranslationCache.get(quoteKey),
         overviewSegmentErrors.get(quoteKey),
@@ -3089,7 +3110,7 @@ async function requestOverviewTranslationSegment(
       overviewTranslationCache.set(key, translated.text);
       overviewSegmentErrors.delete(key);
       await updateCache();
-      renderAnalysisResults(currentAnalysis);
+      updateOverviewSegment(sourceSegment);
       return;
     }
 
@@ -3111,7 +3132,7 @@ async function requestOverviewTranslationSegment(
       failureMessage,
     );
     await updateCache();
-    renderAnalysisResults(currentAnalysis);
+    updateOverviewSegment(sourceSegment);
     return;
   }
 }
@@ -3181,6 +3202,7 @@ globalThis.__YTD_TRANSCRIPT_TESTING__ = {
   getOverviewSegments,
   friendlyOverviewError,
   renderOverviewSegmentHtml,
+  updateOverviewSegment,
   noteTranslationCacheKey,
   getFreshNoteTranslations,
   renderNoteTranslationContent,

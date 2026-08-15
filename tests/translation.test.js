@@ -422,6 +422,19 @@ test("overview renders translated-only, bilingual, pending, and failed states", 
   assert.equal(original, "Chapter title");
 });
 
+test("overview translation updates the completed segment without rebuilding the list", () => {
+  const js = read("sidepanel.js");
+  const requestStart = js.indexOf("async function requestOverviewTranslationSegment");
+  const requestEnd = js.indexOf("async function translateOverview", requestStart);
+  const requestBody = js.slice(requestStart, requestEnd);
+
+  assert.match(js, /data-overview-segment="chapter-\$\{index\}-title"/);
+  assert.match(js, /data-overview-segment="chapter-\$\{index\}-summary"/);
+  assert.match(js, /data-overview-segment="quote-\$\{keyQuotes\.indexOf\(quote\)\}"/);
+  assert.match(requestBody, /updateOverviewSegment\(sourceSegment\)/g);
+  assert.doesNotMatch(requestBody, /renderAnalysisResults\(currentAnalysis\)/);
+});
+
 test("background translates one overview item through the subtitle-compatible protocol", async () => {
   const requests = [];
   const helpers = loadBackgroundHelpers({
