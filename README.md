@@ -1,6 +1,17 @@
-# YouTube Digest
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="YouTube Digest — turn any YouTube video into a resource for deep learning, inside a Chrome side panel">
+</p>
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-FFC53D" alt="License: MIT">
+  <img src="https://img.shields.io/badge/Chrome-116%2B-FAF6EE?logo=googlechrome&logoColor=3A362B" alt="Chrome 116+">
+  <img src="https://img.shields.io/badge/bring--your--own--key-13%20languages-FAF6EE" alt="Bring your own key, 13 languages">
+  <img src="https://img.shields.io/badge/no_analytics-no_telemetry-FAF6EE" alt="No analytics, no telemetry">
+</p>
 
 Turn every YouTube video into a resource for deep learning. YouTube Digest brings transcripts, bilingual translation, AI overviews, explanations, and timestamped notes into one Chrome side panel, so you can study ideas and language without losing your place.
 
@@ -15,32 +26,22 @@ YouTube Digest is a bring-your-own-key project installed locally from GitHub. It
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td>Overview</td>
-    <td>Overview in Japanese</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/overview_english.webp" alt="YouTube Digest overview in English" width="600"></td>
-    <td><img src="docs/images/overview_japanese.webp" alt="YouTube Digest overview in Japanese" width="600"></td>
-  </tr>
-  <tr>
-    <td>Bilingual subtitles</td>
-    <td>Japanese subtitles</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/subtitles_english_and_japanese.webp" alt="English and Japanese bilingual subtitles" width="600"></td>
-    <td><img src="docs/images/subtitles_japanese.webp" alt="Japanese subtitles" width="600"></td>
-  </tr>
-  <tr>
-    <td>Notes</td>
-    <td>Settings</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/note_english.webp" alt="YouTube Digest notes in English" width="600"></td>
-    <td><img src="docs/images/setting_page.webp" alt="YouTube Digest settings page" width="600"></td>
-  </tr>
-</table>
+| | |
+| :---: | :---: |
+| **Overview** | **Overview in Japanese** |
+| <img src="docs/images/overview_english.webp" alt="YouTube Digest overview in English" width="440"> | <img src="docs/images/overview_japanese.webp" alt="YouTube Digest overview in Japanese" width="440"> |
+| **Bilingual subtitles** | **Japanese subtitles** |
+| <img src="docs/images/subtitles_english_and_japanese.webp" alt="English and Japanese bilingual subtitles" width="440"> | <img src="docs/images/subtitles_japanese.webp" alt="Japanese subtitles" width="440"> |
+| **Notes** | **Settings** |
+| <img src="docs/images/note_english.webp" alt="YouTube Digest notes in English" width="440"> | <img src="docs/images/setting_page.webp" alt="YouTube Digest settings page" width="440"> |
+
+## How it works
+
+<p align="center">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="Data flow: native captions fetched via Supadata, processed by DeepSeek with your own key into translation, overviews, explanations and notes, cached locally in your browser">
+</p>
+
+The extension talks to exactly two services, both under your own accounts: **Supadata** retrieves the video's native captions, and **DeepSeek** powers translation, overviews, explanations, and note polishing. Keys, settings, notes, and recent cache entries stay in Chrome's local storage on your device. There is no YouTube Digest account system, advertising, analytics, or telemetry. See [Privacy and data flow](#privacy-and-data-flow).
 
 ## Install with your coding agent
 
@@ -60,7 +61,8 @@ Keep this folder in the same place after installation. If you move or delete it,
 
 Never paste an API key into an AI chat, source file, screenshot, or public message. Enter keys yourself, directly in the YouTube Digest Settings page. Your coding agent can point to the correct field without seeing the key.
 
-## Install manually
+<details>
+<summary><strong>Install manually</strong></summary>
 
 If you prefer to do it yourself:
 
@@ -75,6 +77,8 @@ If you prefer to do it yourself:
 
 Because this is an unpacked extension, it does not update automatically. After downloading an update or changing local files, click **Reload** on the YouTube Digest card at `chrome://extensions`, then refresh open YouTube tabs. Moving or deleting the source folder breaks the unpacked extension until you load it again from the new location.
 
+</details>
+
 ## Set up your API keys
 
 YouTube Digest needs two keys under your own provider accounts:
@@ -82,7 +86,8 @@ YouTube Digest needs two keys under your own provider accounts:
 1. A **Supadata API key** to retrieve YouTube transcripts.
 2. A **DeepSeek API key** for overviews, explanations, translation, and automatic note polishing.
 
-### Get a Supadata API key
+<details>
+<summary><strong>Get a Supadata API key</strong></summary>
 
 1. Open the official [Supadata sign-up page](https://dash.supadata.ai/auth/sign-up).
 2. Create an account and complete the short onboarding flow.
@@ -92,7 +97,10 @@ YouTube Digest needs two keys under your own provider accounts:
 
 See the [official Supadata documentation](https://docs.supadata.ai/) if the dashboard flow changes.
 
-### Get a DeepSeek API key
+</details>
+
+<details>
+<summary><strong>Get a DeepSeek API key</strong></summary>
 
 1. Open the official [DeepSeek API Keys page](https://platform.deepseek.com/api_keys).
 2. Sign in or create a DeepSeek Platform account when prompted.
@@ -102,6 +110,8 @@ See the [official Supadata documentation](https://docs.supadata.ai/) if the dash
 6. If DeepSeek reports insufficient balance, add credit in your DeepSeek Platform account and try again.
 
 See the [official DeepSeek API documentation](https://api-docs.deepseek.com/) for current account and API details.
+
+</details>
 
 Open **Settings** from the side panel. You can also open the YouTube Digest **Options** page from its card at `chrome://extensions` or by right-clicking its toolbar icon. Paste keys only into these Settings fields. Never paste a key into an AI chat, repository file, screenshot, or public message.
 
@@ -143,7 +153,8 @@ Shorts, live streams, private or access-restricted videos, and videos without an
 
 YouTube Digest forces Supadata's `mode=native`. It does not request AI-generated transcripts or perform local audio transcription when native captions are unavailable.
 
-## Supadata free tier and request costs
+<details>
+<summary><strong>Supadata free tier and request costs</strong></summary>
 
 Current as of August 9, 2026, the [Supadata pricing page](https://supadata.ai/pricing) lists a free tier with **100 credits per month**, no credit card required. Unused credits do not roll over. Supadata pricing can change, so check the current page before relying on these numbers.
 
@@ -157,7 +168,10 @@ With the current native-only behavior, the free tier can cover roughly 100 trans
 
 DeepSeek usage is separate from Supadata. DeepSeek may apply its own free quota, rate limits, or charges. YouTube Digest does not collect payments or resell access. Set spending limits and monitor both accounts. The estimate below explains the current DeepSeek translation cost.
 
-## DeepSeek V4 Flash translation cost estimate
+</details>
+
+<details>
+<summary><strong>DeepSeek V4 Flash translation cost estimate</strong></summary>
 
 Current as of August 10, 2026, DeepSeek lists the following prices per 1 million tokens on its official [pricing page](https://api-docs.deepseek.com/quick_start/pricing/):
 
@@ -173,11 +187,16 @@ If all input is billed as cache miss, input costs about $0.0046 and output costs
 
 Translation is lazy and progressive. Cached segments are reused, and only rows you request by scrolling into them incur calls. Retries, provider behavior, and pricing changes can increase the final cost.
 
+</details>
+
 ## Remix it with your coding agent
 
 This is a personal remix project. Upstream issues and pull requests are not accepted. If something breaks or you want a new feature, download or fork your own copy and ask your coding agent to fix, remix, or personalize it for you.
 
-YouTube Digest uses plain HTML, CSS, and JavaScript with no build step, so it is a friendly starting point for agent-assisted projects. Ideas to try:
+YouTube Digest uses plain HTML, CSS, and JavaScript with no build step, so it is a friendly starting point for agent-assisted projects. Ask your agent to preserve the bring-your-own-key model, keep secrets out of source files, run the [checks below](#checks-for-coding-agents), and test the remix on real videos.
+
+<details>
+<summary><strong>Ideas to try</strong></summary>
 
 - Create customized summary templates for lectures, interviews, tutorials, reviews, or research talks.
 - Build a vocabulary notebook that saves a word, its sentence, meaning, and video timestamp.
@@ -187,7 +206,7 @@ YouTube Digest uses plain HTML, CSS, and JavaScript with no build step, so it is
 - Add optional local-model support for a different privacy and cost tradeoff.
 - Improve accessibility with keyboard navigation, font controls, and higher-contrast themes.
 
-Ask your agent to preserve the bring-your-own-key model, keep secrets out of source files, run the checks below, and test the remix on real videos.
+</details>
 
 If you want another AI provider or model, first open the exact YouTube Digest project folder that Chrome loaded through **Load unpacked** in your coding agent. Then open YouTube Digest Settings and use **Copy customization prompt**. Replace the `[PROVIDER]` and `[MODEL]` placeholders before sending it. Do not include any API key in the prompt or chat. After the agent updates your local copy, enter the key yourself in the Settings field it identifies.
 
@@ -202,7 +221,8 @@ YouTube Digest makes provider requests directly from the extension:
 
 There is no YouTube Digest account system, advertising, analytics, or telemetry. Supadata and DeepSeek still receive data under their own terms and privacy policies. See [PRIVACY.md](PRIVACY.md) for details.
 
-## Troubleshooting
+<details>
+<summary><strong>Troubleshooting</strong></summary>
 
 ### The Digest button is missing on a YouTube video
 
@@ -241,6 +261,8 @@ YouTube Digest will not fall back to generated transcription.
 - If you adapted a local copy for another model, use the Settings customization prompt again and ask your coding agent to inspect that local implementation.
 
 Never share API keys, private transcripts, or personal notes in chats, screenshots, or logs.
+
+</details>
 
 ## Checks for coding agents
 
