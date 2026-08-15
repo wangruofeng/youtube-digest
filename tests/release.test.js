@@ -38,7 +38,10 @@ test("release copy documents current scope without em dashes", () => {
     [readme, chineseReadme, read("PRIVACY.md"), read("SECURITY.md")].join("\n"),
     /\bYT Digest\b/,
   );
-  assert.match(readme, /^# YouTube Digest$/m);
+  assert.match(
+    readme,
+    /^<p align="center">\n  <img src="\.\/assets\/readme\/hero\.svg".*?alt="YouTube Digest:/,
+  );
   assert.match(
     readme,
     /Turn every YouTube video into a resource for deep learning\./,
@@ -63,7 +66,10 @@ test("release copy documents current scope without em dashes", () => {
   );
   assert.match(readme, /upstream issues and pull requests are not accepted/i);
   assert.doesNotMatch(readme, /^## Contributing$/m);
-  assert.match(chineseReadme, /^# YouTube Digest$/m);
+  assert.match(
+    chineseReadme,
+    /^<p align="center">\n  <img src="\.\/assets\/readme\/hero\.zh-CN\.svg".*?alt="YouTube Digest：/,
+  );
   assert.match(chineseReadme, /把每个 YouTube 视频变成一份可以深入学习的资料/);
   assert.match(chineseReadme, /^## 让你的编程 Agent 帮你安装$/m);
   assert.match(
@@ -82,7 +88,7 @@ test("release copy documents current scope without em dashes", () => {
     chineseReadme,
     /选择你刚才确定的那个准确项目文件夹，其中必须包含 `manifest\.json`/,
   );
-  assert.match(chineseReadme, /不接受上游 Issue 或 Pull Request/);
+  assert.match(chineseReadme, /不接受上游 issue 和 pull request/i);
   // The multi-language translation roadmap item shipped: both READMEs now
   // document the selectable language pair instead of planning it.
   assert.match(chineseReadme, /13 种翻译语言/);
@@ -109,16 +115,16 @@ test("release copy documents current scope without em dashes", () => {
   assert.match(chineseReadme, /api-docs\.deepseek\.com\/quick_start\/pricing/i);
   assert.match(chineseReadme, /api-docs\.deepseek\.com\/quick_start\/token_usage/i);
   assert.match(chineseReadme, /api-docs\.deepseek\.com\/guides\/kv_cache/i);
-  assert.match(chineseReadme, /\u00a50\.02[\s\S]*\u00a51[\s\S]*\u00a52/);
-  assert.match(chineseReadme, /2,935 \u4e2a\u82f1\u6587\u53e3\u8bed\u8bcd/);
-  assert.match(chineseReadme, /\u7ea6 32,600 \u4e2a\u8f93\u5165 token/);
-  assert.match(chineseReadme, /\$0\.002[^\n]*\$0\.006 USD/);
+  assert.match(chineseReadme, /\u00a50\.02[\s\S]*\u00a50\.04/);
+  assert.match(chineseReadme, /2,935 \u4e2a\u82f1\u6587\u53e3\u8bed\u5355\u8bcd/);
+  assert.match(chineseReadme, /32,600 \u8f93\u5165 token/);
+  assert.match(chineseReadme, /\$0\.002[^\n]*\$0\.006 \u7f8e\u5143/);
   assert.match(chineseReadme, /dash\.supadata\.ai\/auth\/sign-up/i);
   assert.match(chineseReadme, /platform\.deepseek\.com\/api_keys/i);
   assert.match(readme, /^### The Digest button is missing on a YouTube video$/m);
   assert.match(
     chineseReadme,
-    /^### YouTube 视频页面没有显示 Digest 按钮$/m,
+    /^### YouTube 视频上看不到 Digest 按钮$/m,
   );
 
   const optionsPage = read("options.html");
@@ -171,7 +177,7 @@ test("release copy documents current scope without em dashes", () => {
   );
   assert.match(
     chineseReadme,
-    /先在编程 Agent 中打开 Chrome 通过“加载已解压的扩展程序”使用的那个准确的 YouTube Digest 项目文件夹/,
+    /先在编程 Agent 中打开 Chrome 通过“加载已解压的扩展程序”加载的那个 YouTube Digest 项目文件夹/,
   );
 
   const publishedDocs = [
@@ -185,7 +191,7 @@ test("release copy documents current scope without em dashes", () => {
   assert.doesNotMatch(publishedDocs, /chosen AI provider/i);
   assert.doesNotMatch(publishedDocs, /configure a different OpenAI-compatible/i);
   assert.match(readme, /published version supports DeepSeek V4 Flash as its only AI provider/i);
-  assert.match(chineseReadme, /发布版本只支持 DeepSeek V4 Flash/);
+  assert.match(chineseReadme, /发布版本仅支持 DeepSeek V4 Flash/);
 });
 
 test("notes filters preserve selected contrast and expose pressed state", () => {
