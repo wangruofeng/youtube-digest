@@ -1,17 +1,31 @@
 const YTD_OPTIONS = (() => {
   const LANGUAGE_STORAGE_KEY = "ytd_options_language";
   const PREVIEW_STORAGE_PREFIX = "youtubeDigestPreview:";
-  const SUPPORTED_LANGUAGES = new Set(["en", "zh-CN"]);
+  const SUPPORTED_LANGUAGES = new Set([
+    "en", "zh-CN", "zh-TW", "ja", "ko", "hi", "es", "fr", "ar", "bn", "pt", "ru", "ur",
+  ]);
+  const INTERFACE_LANGUAGE_NAMES = Object.freeze({
+    en: "English", "zh-CN": "简体中文", "zh-TW": "繁體中文", ja: "日本語",
+    ko: "한국어", hi: "हिन्दी", es: "Español", fr: "Français", ar: "العربية",
+    bn: "বাংলা", pt: "Português", ru: "Русский", ur: "اردو",
+  });
 
   const COPY = {
     en: {
       pageTitle: "YouTube Digest Settings",
       languageGroupLabel: "Interface language",
+      translationLanguages: "Language settings",
+      sourceLanguageLabel: "Original language",
+      targetLanguageLabel: "Target language",
+      translationLanguagesHelp:
+        "New transcript requests use the selected original language. Translations and their cache are kept separately for each language pair.",
       heading: "Bring your own API keys",
       lede:
         "Keys stay in this Chrome profile and are sent only to Supadata and DeepSeek. This open-source extension has no developer server or analytics.",
       transcriptProvider: "Transcript provider",
       supadataApiKeyLabel: "Supadata API key",
+      showApiKey: "Show",
+      hideApiKey: "Hide",
       supadataHelp: "Used to fetch timestamped YouTube subtitles. ",
       supadataLink: "Create a Supadata account and key",
       supadataHelpSuffix:
@@ -26,8 +40,6 @@ const YTD_OPTIONS = (() => {
       deepseekHelpSuffix: ".",
       privacyNote:
         "When you use AI features, DeepSeek receives the video transcript and relevant video context. Review DeepSeek's terms and pricing before saving.",
-      saveSettings: "Save settings",
-      localRemix: "Local remix",
       customizationTitle: "Want to use another AI model?",
       customizationPurpose: "Edit and copy a safe prompt for your coding agent",
       agentBadge: "Coding agent ready",
@@ -49,24 +61,17 @@ const YTD_OPTIONS = (() => {
       localData: "Local data",
       localDataHelp:
         "Digests, translations, and notes are stored only in this Chrome profile. You can remove them at any time.",
-      clearCache: "Clear cached digests",
+      clearCache: "Clear all caches",
       deleteNotes: "Delete all notes",
       resetData: "Reset extension data",
       footer:
         'Read <a href="PRIVACY.md" target="_blank">PRIVACY.md</a> in the repository for the complete data-flow description.',
-      migrationWarning:
-        "Custom provider settings were removed safely. Your Supadata key was kept, but the AI key was cleared. Enter a DeepSeek API key to continue.",
-      saving: "Saving…",
-      addSupadataKey: "Add a Supadata API key.",
-      addDeepseekKey: "Add a DeepSeek API key.",
-      saved: "Saved. Reopen YouTube Digest to use these settings.",
-      saveFailed: "Could not save settings. Please try again.",
       copying: "Copying…",
       promptCopied: "Edited prompt copied.",
       copyFailed:
         "Could not copy the prompt. Select the prompt text and copy it manually.",
       clearedDigests: ({ count }) =>
-        `Cleared ${count} cached digest${count === 1 ? "" : "s"}.`,
+        `Cleared ${count} cached item${count === 1 ? "" : "s"}.`,
       notesDeleted: "Deleted all saved notes.",
       resetConfirm:
         "Delete API keys, cached digests, translations, and saved notes from this Chrome profile?",
@@ -77,11 +82,18 @@ const YTD_OPTIONS = (() => {
     "zh-CN": {
       pageTitle: "YouTube Digest 设置",
       languageGroupLabel: "界面语言",
+      translationLanguages: "语言设置",
+      sourceLanguageLabel: "原文语言",
+      targetLanguageLabel: "目标语言",
+      translationLanguagesHelp:
+        "新的字幕请求会使用所选原文语言；每种语言组合的翻译和缓存会独立保存。",
       heading: "使用你自己的 API 密钥",
       lede:
         "密钥仅保存在当前 Chrome 个人资料中，只会发送给 Supadata 和 DeepSeek。本开源扩展没有开发者服务器，也不使用分析服务。",
       transcriptProvider: "字幕服务",
       supadataApiKeyLabel: "Supadata API 密钥",
+      showApiKey: "显示",
+      hideApiKey: "隐藏",
       supadataHelp: "用于获取带时间戳的 YouTube 字幕。",
       supadataLink: "创建 Supadata 账号并获取密钥",
       supadataHelpSuffix: "。Supadata 会在引导流程中生成密钥。",
@@ -95,8 +107,6 @@ const YTD_OPTIONS = (() => {
       deepseekHelpSuffix: "。",
       privacyNote:
         "使用 AI 功能时，DeepSeek 会收到视频字幕及相关视频上下文。保存前请查看 DeepSeek 的服务条款和价格。",
-      saveSettings: "保存设置",
-      localRemix: "本地改造",
       customizationTitle: "想使用其他 AI 模型？",
       customizationPurpose: "编辑并复制一段可安全交给编程 Agent 的提示词",
       agentBadge: "可交给编程 Agent",
@@ -117,22 +127,15 @@ const YTD_OPTIONS = (() => {
       localData: "本地数据",
       localDataHelp:
         "摘要、翻译和笔记仅保存在当前 Chrome 个人资料中。你可以随时删除。",
-      clearCache: "清除缓存的摘要",
+      clearCache: "清除全部缓存",
       deleteNotes: "删除全部笔记",
       resetData: "重置扩展数据",
       footer:
         '完整数据流说明请参阅仓库中的 <a href="PRIVACY.md" target="_blank">PRIVACY.md</a>。',
-      migrationWarning:
-        "已安全移除自定义服务设置。Supadata 密钥已保留，AI 密钥已清除。请输入 DeepSeek API 密钥以继续使用。",
-      saving: "正在保存…",
-      addSupadataKey: "请添加 Supadata API 密钥。",
-      addDeepseekKey: "请添加 DeepSeek API 密钥。",
-      saved: "已保存。请重新打开 YouTube Digest 以使用这些设置。",
-      saveFailed: "无法保存设置，请重试。",
       copying: "正在复制…",
       promptCopied: "已复制编辑后的提示词。",
       copyFailed: "无法复制提示词。请选中提示词文本并手动复制。",
-      clearedDigests: ({ count }) => `已清除 ${count} 条缓存摘要。`,
+      clearedDigests: ({ count }) => `已清除 ${count} 条缓存。`,
       notesDeleted: "已删除全部已保存的笔记。",
       resetConfirm:
         "要从当前 Chrome 个人资料中删除 API 密钥、缓存摘要、翻译和已保存的笔记吗？",
@@ -145,9 +148,24 @@ const YTD_OPTIONS = (() => {
     return SUPPORTED_LANGUAGES.has(language) ? language : "en";
   }
 
+  function resolveSystemLanguage(systemLanguage = globalThis.navigator?.language) {
+    const locale = String(systemLanguage || "").trim().toLowerCase();
+    const exactMatch = [...SUPPORTED_LANGUAGES].find(
+      (language) => language.toLowerCase() === locale,
+    );
+    if (exactMatch) return exactMatch;
+
+    const primaryLanguage = locale.split("-")[0];
+    if (primaryLanguage === "zh") return "zh-CN";
+    const primaryMatch = [...SUPPORTED_LANGUAGES].find(
+      (language) => language.toLowerCase() === primaryLanguage,
+    );
+    return primaryMatch || "zh-CN";
+  }
+
   function translate(language, key, params = {}) {
     const normalizedLanguage = normalizeLanguage(language);
-    const value = COPY[normalizedLanguage][key] ?? COPY.en[key] ?? "";
+    const value = COPY[normalizedLanguage]?.[key] ?? COPY.en[key] ?? "";
     return typeof value === "function" ? value(params) : value;
   }
 
@@ -253,9 +271,14 @@ const YTD_OPTIONS = (() => {
     };
   }
 
-  async function readPreferredLanguage(storage) {
+  async function readPreferredLanguage(
+    storage,
+    systemLanguage = globalThis.navigator?.language,
+  ) {
     const stored = await storage.get(LANGUAGE_STORAGE_KEY);
-    return normalizeLanguage(stored[LANGUAGE_STORAGE_KEY]);
+    return SUPPORTED_LANGUAGES.has(stored[LANGUAGE_STORAGE_KEY])
+      ? stored[LANGUAGE_STORAGE_KEY]
+      : resolveSystemLanguage(systemLanguage);
   }
 
   async function persistPreferredLanguage(storage, language) {
@@ -299,10 +322,24 @@ const YTD_OPTIONS = (() => {
   }
 
   function createPromptDrafts() {
-    return {
-      en: translate("en", "customizationPrompt"),
-      "zh-CN": translate("zh-CN", "customizationPrompt"),
-    };
+    return Object.fromEntries(
+      [...SUPPORTED_LANGUAGES].map((language) => [
+        language,
+        translate(language, "customizationPrompt"),
+      ]),
+    );
+  }
+
+  function populateLanguageSelect(select, languages, selected) {
+    select.replaceChildren(
+      ...languages.map((language) => {
+        const option = select.ownerDocument.createElement("option");
+        option.value = language.code;
+        option.textContent = language.nativeName || INTERFACE_LANGUAGE_NAMES[language.code] || language.name;
+        option.selected = language.code === selected;
+        return option;
+      }),
+    );
   }
 
   function switchPromptDraft(
@@ -347,7 +384,6 @@ const YTD_OPTIONS = (() => {
       root.chrome,
       getSafeLocalStorage(root),
     );
-    const form = doc.getElementById("settingsForm");
     const aiApiKeyInput = doc.getElementById("aiApiKey");
     const supadataApiKeyInput = doc.getElementById("supadataApiKey");
     const customizationPrompt = doc.getElementById("customizationPrompt");
@@ -355,12 +391,15 @@ const YTD_OPTIONS = (() => {
       "copyCustomizationPromptBtn",
     );
     const copyStatus = doc.getElementById("copyStatus");
-    const saveStatus = doc.getElementById("saveStatus");
     const dataStatus = doc.getElementById("dataStatus");
-    const languageButtons = [...doc.querySelectorAll("[data-language]")];
+    const interfaceLanguageSelect = doc.getElementById("interfaceLanguage");
+    const sourceLanguageSelect = doc.getElementById("sourceLanguage");
+    const targetLanguageSelect = doc.getElementById("targetLanguage");
+    const apiKeyToggleButtons = [...doc.querySelectorAll("[data-api-key-toggle]")];
     const statusStates = new Map();
     const promptDrafts = createPromptDrafts();
     let currentLanguage = "en";
+    let settingsSave = Promise.resolve();
 
     function renderStatus(element) {
       const state = statusStates.get(element);
@@ -408,62 +447,94 @@ const YTD_OPTIONS = (() => {
         customizationPrompt,
         nextDraft.prompt,
       );
-      updateLanguageButtonState(languageButtons, currentLanguage);
+      interfaceLanguageSelect.value = currentLanguage;
+      updateApiKeyVisibilityLabels();
       for (const element of statusStates.keys()) renderStatus(element);
+    }
+
+    function updateApiKeyVisibilityLabels() {
+      for (const button of apiKeyToggleButtons) {
+        const input = doc.getElementById(button.dataset.apiKeyToggle);
+        button.textContent = translate(
+          currentLanguage,
+          input?.type === "text" ? "hideApiKey" : "showApiKey",
+        );
+      }
     }
 
     async function loadSettings() {
       try {
         const stored = await storage.get(settingsApi.STORAGE_KEY);
+        const rawSettings = stored[settingsApi.STORAGE_KEY];
+        const targetLanguageFallback = settingsApi.getSystemTranslationLanguage(
+          root.navigator?.language,
+        );
         const migration = settingsApi.migrateLegacyCustom(
-          stored[settingsApi.STORAGE_KEY],
+          rawSettings,
+          targetLanguageFallback,
         );
         const settings = migration.settings;
 
         aiApiKeyInput.value = settings.aiApiKey;
         supadataApiKeyInput.value = settings.supadataApiKey;
-        if (migration.migrated) {
+        sourceLanguageSelect.value = settings.sourceLanguage;
+        targetLanguageSelect.value = settings.targetLanguage;
+        const hasSavedTargetLanguage =
+          settingsApi.normalizeTranslationLanguage(
+            rawSettings?.targetLanguage,
+            null,
+          ) !== null;
+        if (migration.migrated || !hasSavedTargetLanguage) {
           await storage.set({ [settingsApi.STORAGE_KEY]: settings });
-          setStatus(saveStatus, "migrationWarning");
         }
-      } catch (_error) {
-        setStatus(saveStatus, "settingsLoadFailed");
-      }
+      } catch (_error) {}
     }
 
     async function loadOptions() {
       try {
-        applyLanguage(await readPreferredLanguage(storage));
+        const stored = await storage.get(LANGUAGE_STORAGE_KEY);
+        const hasSavedLanguage = SUPPORTED_LANGUAGES.has(
+          stored[LANGUAGE_STORAGE_KEY],
+        );
+        const language = await readPreferredLanguage(
+          storage,
+          root.navigator?.language,
+        );
+        applyLanguage(language);
+        if (!hasSavedLanguage) await persistPreferredLanguage(storage, language);
       } catch (_error) {
-        applyLanguage("en");
+        applyLanguage(resolveSystemLanguage(root.navigator?.language));
       }
       await loadSettings();
     }
 
-    async function saveSettings(event) {
-      event.preventDefault();
-      setStatus(saveStatus, "saving");
+    root.chrome?.storage?.onChanged?.addListener?.((changes, areaName) => {
+      if (areaName !== "local" || !changes[settingsApi.STORAGE_KEY]) return;
+      const settings = settingsApi.normalize(
+        changes[settingsApi.STORAGE_KEY].newValue,
+        settingsApi.getSystemTranslationLanguage(root.navigator?.language),
+      );
+      // Keep language controls in sync with changes initiated by the side
+      // panel, without replacing API-key text the user may be editing here.
+      sourceLanguageSelect.value = settings.sourceLanguage;
+      targetLanguageSelect.value = settings.targetLanguage;
+    });
 
-      const settings = settingsApi.normalize({
-        aiApiKey: aiApiKeyInput.value,
-        supadataApiKey: supadataApiKeyInput.value,
-      });
-
-      if (!settings.supadataApiKey) {
-        setStatus(saveStatus, "addSupadataKey");
-        return;
-      }
-      if (!settings.aiApiKey) {
-        setStatus(saveStatus, "addDeepseekKey");
-        return;
-      }
-
-      try {
-        await storage.set({ [settingsApi.STORAGE_KEY]: settings });
-        setStatus(saveStatus, "saved");
-      } catch (_error) {
-        setStatus(saveStatus, "saveFailed");
-      }
+    function saveSettingsSilently() {
+      settingsSave = settingsSave
+        .catch(() => {})
+        .then(async () => {
+          const stored = await storage.get(settingsApi.STORAGE_KEY);
+          const settings = settingsApi.normalize({
+            ...stored[settingsApi.STORAGE_KEY],
+            aiApiKey: aiApiKeyInput.value,
+            supadataApiKey: supadataApiKeyInput.value,
+            sourceLanguage: sourceLanguageSelect.value,
+            targetLanguage: targetLanguageSelect.value,
+          });
+          await storage.set({ [settingsApi.STORAGE_KEY]: settings });
+        });
+      return settingsSave;
     }
 
     async function copyCustomizationPrompt() {
@@ -481,7 +552,10 @@ const YTD_OPTIONS = (() => {
 
     async function clearCachedDigests() {
       const all = await storage.get(null);
-      const keys = Object.keys(all).filter((key) => key.startsWith("digest_"));
+      const keys = Object.keys(all).filter(
+        (key) =>
+          key.startsWith("digest_") || key === "ytd_note_translation_cache",
+      );
       if (keys.length) await storage.remove(keys);
       setStatus(dataStatus, "clearedDigests", { count: keys.length });
     }
@@ -503,7 +577,6 @@ const YTD_OPTIONS = (() => {
       setStatus(dataStatus, "allDataDeleted");
     }
 
-    form.addEventListener("submit", saveSettings);
     copyCustomizationPromptBtn.addEventListener(
       "click",
       copyCustomizationPrompt,
@@ -513,11 +586,47 @@ const YTD_OPTIONS = (() => {
       .addEventListener("click", clearCachedDigests);
     doc.getElementById("clearNotesBtn").addEventListener("click", clearNotes);
     doc.getElementById("resetBtn").addEventListener("click", resetAllData);
-    for (const button of languageButtons) {
-      button.addEventListener("click", async () => {
-        const language = button.dataset.language;
-        applyLanguage(language);
-        await persistPreferredLanguage(storage, language);
+    populateLanguageSelect(
+      interfaceLanguageSelect,
+      [...SUPPORTED_LANGUAGES].map((code) => ({
+        code,
+        nativeName: INTERFACE_LANGUAGE_NAMES[code],
+      })),
+      resolveSystemLanguage(root.navigator?.language),
+    );
+    populateLanguageSelect(
+      sourceLanguageSelect,
+      settingsApi.TRANSLATION_LANGUAGES,
+      settingsApi.DEFAULTS.sourceLanguage,
+    );
+    populateLanguageSelect(
+      targetLanguageSelect,
+      settingsApi.TRANSLATION_LANGUAGES,
+      settingsApi.getSystemTranslationLanguage(root.navigator?.language),
+    );
+    interfaceLanguageSelect.addEventListener("change", async () => {
+      const language = interfaceLanguageSelect.value;
+      applyLanguage(language);
+      await persistPreferredLanguage(storage, language);
+    });
+    sourceLanguageSelect.addEventListener("change", () => {
+      void saveSettingsSilently();
+    });
+    targetLanguageSelect.addEventListener("change", () => {
+      void saveSettingsSilently();
+    });
+    aiApiKeyInput.addEventListener("input", () => {
+      void saveSettingsSilently();
+    });
+    supadataApiKeyInput.addEventListener("input", () => {
+      void saveSettingsSilently();
+    });
+    for (const button of apiKeyToggleButtons) {
+      button.addEventListener("click", () => {
+        const input = doc.getElementById(button.dataset.apiKeyToggle);
+        if (!input) return;
+        input.type = input.type === "password" ? "text" : "password";
+        updateApiKeyVisibilityLabels();
       });
     }
 
@@ -531,10 +640,13 @@ const YTD_OPTIONS = (() => {
   return {
     COPY,
     LANGUAGE_STORAGE_KEY,
+    INTERFACE_LANGUAGE_NAMES,
     copyPromptValue,
     createPromptDrafts,
     createStorageAdapter,
     normalizeLanguage,
+    resolveSystemLanguage,
+    populateLanguageSelect,
     persistPreferredLanguage,
     readPreferredLanguage,
     translate,

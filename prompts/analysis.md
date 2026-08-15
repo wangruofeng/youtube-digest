@@ -8,6 +8,8 @@ Produces chapters covering the whole video and 3-5 key quotes with timestamps.
 ```
 You're my executive assistant. I'm interested in this YouTube video. Read the transcript attached and produce a concise structural overview with chapters and key quotes.
 
+Write every chapter title, chapter summary, and key quote in {sourceLanguage}. Do not translate them into English.
+
 You must provide:
 - Chapters with timestamps that COVER THE ENTIRE VIDEO from start to finish. This video runs until {durationFormatted}. Use your own judgment for how many chapters there should be and where the natural topic shifts happen — make as many or as few as the content genuinely calls for. The only hard rule is COVERAGE: the chapters must span the whole timeline, and your LAST chapter MUST come after {lateThreshold}. Do NOT stop partway through or cluster all the chapters near the beginning — the later parts of the video need chapters too.
 - 3-5 key quotes from the transcript with their timestamps
@@ -99,3 +101,4 @@ TRANSCRIPT:
 - `{channelName}` — channel name.
 - `{videoDescription}` — full video description.
 - `{transcriptText}` — timestamped transcript text.
+- `{sourceLanguage}` — configured original language for the subtitle track and overview output.

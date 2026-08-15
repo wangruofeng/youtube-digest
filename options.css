@@ -2,12 +2,19 @@
   color-scheme: light;
   --bg: #f7f3ec;
   --surface: #ffffff;
+  --surface-raised: #fbf8f2;
   --border: #e7dfd2;
-  --text: #2e2a24;
-  --muted: #6b6258;
   --accent: #c8674f;
   --accent-hover: #ad523e;
+  --accent-dim: rgba(200, 103, 79, 0.1);
   --danger: #9f2d2d;
+  --danger-dim: rgba(159, 45, 45, 0.07);
+  --text: #2e2a24;
+  --muted: #6b6258;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
 }
 
 * {
@@ -23,13 +30,13 @@ body {
 }
 
 .settings-shell {
-  width: min(760px, calc(100% - 32px));
+  width: min(680px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 56px 0 72px;
+  padding: 48px 0 72px;
 }
 
 header {
-  margin-bottom: 28px;
+  margin-bottom: 30px;
 }
 
 .settings-heading-row {
@@ -39,55 +46,57 @@ header {
   gap: 16px;
 }
 
-.language-switch {
-  display: inline-flex;
-  flex: 0 0 auto;
-  padding: 2px;
-  border: 1px solid var(--border);
+.language-control {
+  appearance: none;
+  border: 1px solid #e8ddd0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.language-switch .language-option {
-  min-width: 62px;
-  padding: 5px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.language-switch .language-option:hover {
-  border-color: transparent;
+  background-color: rgba(255, 255, 255, 0.82);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m2 2 4 4 4-4' fill='none' stroke='%236b6258' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  box-shadow: 0 1px 2px rgba(46, 42, 36, 0.05);
   color: var(--text);
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
-.language-switch .language-option[aria-pressed="true"] {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 4px rgba(46, 42, 36, 0.14);
+.language-control:hover {
+  border-color: #d5b5a8;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(116, 77, 63, 0.1);
 }
 
-.language-switch .language-option:focus-visible {
-  outline: 3px solid rgba(200, 103, 79, 0.28);
-  outline-offset: 1px;
+.language-control:focus-visible {
+  border-color: var(--accent);
+  outline: 3px solid rgba(200, 103, 79, 0.18);
+  outline-offset: 2px;
 }
 
-.eyebrow {
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.translation-language-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(190px, 1fr);
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.translation-language-grid label {
+  margin: 0;
+}
+
+.translation-language-grid select {
+  width: 108px;
+  justify-self: end;
+  padding: 7px 30px 7px 12px;
+  text-align: right;
+  text-align-last: right;
 }
 
 h1 {
-  margin: 6px 0 8px;
-  font-size: clamp(30px, 5vw, 46px);
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+  margin: 0;
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
 }
 
 .lede,
@@ -100,18 +109,23 @@ h1 {
   font-size: 17px;
 }
 
+/* One surface everywhere: white card, hairline border, tight shadow.
+   No gradient fills, no tinted boxes — the section title carries the
+   grouping, the border does the separating. */
 .card {
-  margin: 18px 0;
-  padding: 24px;
+  margin: 16px 0;
+  padding: 22px 24px;
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   background: var(--surface);
-  box-shadow: 0 10px 30px rgba(46, 42, 36, 0.05);
+  box-shadow: 0 1px 3px rgba(90, 80, 60, 0.06);
 }
 
 h2 {
   margin: 0 0 18px;
-  font-size: 19px;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
 }
 
 label {
@@ -131,15 +145,49 @@ textarea {
   width: 100%;
   padding: 11px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fff;
+  border-radius: var(--r-md);
+  background: var(--surface-raised);
   color: var(--text);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+input:hover,
+textarea:hover {
+  border-color: #d5c9b8;
 }
 
 input:focus,
 textarea:focus {
   border-color: var(--accent);
-  outline: 3px solid rgba(200, 103, 79, 0.14);
+  background: var(--surface);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.api-key-input {
+  position: relative;
+}
+
+.api-key-input input {
+  padding-right: 64px;
+}
+
+.api-key-visibility {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  min-width: 46px;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--accent-hover);
+  font-size: 12px;
+  transform: translateY(-50%);
+}
+
+.api-key-visibility:hover {
+  background: #f8eee9;
 }
 
 textarea {
@@ -148,6 +196,7 @@ textarea {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
   line-height: 1.55;
+  border-radius: var(--r-sm);
 }
 
 .help {
@@ -162,9 +211,10 @@ a {
 .privacy-note {
   margin-top: 18px;
   padding: 12px 14px;
-  border-radius: 10px;
-  background: #f8eee9;
-  color: #60483f;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--surface-raised);
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -179,10 +229,10 @@ a {
 .provider-summary {
   justify-content: space-between;
   margin-bottom: 18px;
-  padding: 13px 14px;
-  border: 1px solid #ecd8ce;
-  border-radius: 12px;
-  background: #fdf6f2;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-raised);
 }
 
 .provider-name {
@@ -201,8 +251,6 @@ a {
 
 .customization-card {
   padding: 0;
-  border-color: #ddc2b7;
-  background: linear-gradient(145deg, #fff 0%, #fff9f6 100%);
   overflow: hidden;
 }
 
@@ -212,7 +260,7 @@ a {
   align-items: center;
   gap: 12px;
   padding: 17px 22px;
-  border-radius: 17px;
+  border-radius: calc(var(--r-lg) - 1px);
   cursor: pointer;
   list-style: none;
   transition: background 0.18s ease;
@@ -228,16 +276,16 @@ a {
   border-right: 2px solid var(--accent-hover);
   border-bottom: 2px solid var(--accent-hover);
   content: "";
-  transform: rotate(45deg);
+  transform: translateY(-3px) rotate(45deg);
   transition: transform 0.18s ease;
 }
 
 .customization-card[open] .customization-summary::after {
-  transform: rotate(225deg);
+  transform: translateY(3px) rotate(225deg);
 }
 
 .customization-summary:hover {
-  background: #fdf3ee;
+  background: var(--surface-raised);
 }
 
 .customization-summary:focus-visible {
@@ -264,7 +312,19 @@ a {
 
 .customization-content {
   padding: 19px 22px 22px;
-  border-top: 1px solid #ead8d0;
+  border-top: 1px solid var(--border);
+  animation: detailsReveal 0.28s ease;
+}
+
+@keyframes detailsReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .customization-intro {
@@ -289,19 +349,18 @@ a {
 .prompt-reminder {
   margin: 8px 0 10px;
   padding: 10px 12px;
-  border: 1px solid #e7b9a8;
-  border-radius: 10px;
-  background: #fff2ec;
-  color: #60483f;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--surface-raised);
+  color: var(--muted);
   font-size: 13px;
-  font-weight: 750;
+  font-weight: 650;
 }
 
 .copy-actions {
   margin-top: 12px;
 }
 
-.form-actions,
 .data-actions {
   display: flex;
   align-items: center;
@@ -313,17 +372,29 @@ a {
   margin-top: 18px;
 }
 
+/* Buttons — same pill language as the side panel. Surface shift on hover,
+   no growth. The danger button lives in its own group below. */
 button {
   padding: 10px 15px;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--r-pill);
+  background: var(--surface);
   color: var(--text);
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 650;
+  transition: border-color 0.16s ease, color 0.16s ease,
+    background 0.16s ease;
 }
 
 button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+button:focus-visible {
+  outline: 3px solid var(--accent-dim);
+  outline-offset: 2px;
   border-color: var(--accent);
 }
 
@@ -335,17 +406,47 @@ button.primary {
 
 button.primary:hover {
   background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #fff;
 }
 
-button.danger {
+/* Destructive action, fenced off in its own group: hairline top divider,
+   danger-tinted border on hover so the consequence reads before the click. */
+.danger-zone {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.danger-zone .danger {
   color: var(--danger);
+  border-color: #e3cfc9;
 }
 
+.danger-zone .danger:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-dim);
+}
+
+/* Status messages fade in once, then sit quiet — feedback without a flash. */
 #saveStatus,
 #dataStatus,
 #copyStatus {
   color: var(--muted);
   font-size: 13px;
+  animation: statusIn 0.3s ease;
+}
+
+@keyframes statusIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .data-card {
@@ -356,6 +457,21 @@ footer {
   margin-top: 28px;
   color: var(--muted);
   font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customization-content,
+  #saveStatus,
+  #dataStatus,
+  #copyStatus {
+    animation: none;
+  }
+
+  input,
+  textarea,
+  button {
+    transition: none;
+  }
 }
 
 @media (max-width: 620px) {
@@ -371,11 +487,6 @@ footer {
     align-items: flex-start;
   }
 
-  .language-switch .language-option {
-    min-width: 56px;
-    padding-inline: 8px;
-  }
-
   .customization-card {
     padding: 0;
   }
@@ -388,7 +499,8 @@ footer {
 
   .customization-summary::after {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 2;
+    align-self: center;
   }
 
   .customization-summary .agent-badge {

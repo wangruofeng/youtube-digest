@@ -37,6 +37,56 @@ async function getSettings() {
 }
 
 const promptFileCache = new Map();
+const FALLBACK_TRANSLATION_LANGUAGES = Object.freeze({
+  en: { code: "en", name: "English", supadataCode: "en" },
+  "zh-CN": { code: "zh-CN", name: "Simplified Chinese", supadataCode: "zh" },
+  "zh-TW": { code: "zh-TW", name: "Traditional Chinese", supadataCode: "zh-TW" },
+  ja: { code: "ja", name: "Japanese", supadataCode: "ja" },
+  ko: { code: "ko", name: "Korean", supadataCode: "ko" },
+  hi: { code: "hi", name: "Hindi", supadataCode: "hi" },
+  es: { code: "es", name: "Spanish", supadataCode: "es" },
+  fr: { code: "fr", name: "French", supadataCode: "fr" },
+  ar: { code: "ar", name: "Arabic", supadataCode: "ar" },
+  bn: { code: "bn", name: "Bengali", supadataCode: "bn" },
+  pt: { code: "pt", name: "Portuguese", supadataCode: "pt" },
+  ru: { code: "ru", name: "Russian", supadataCode: "ru" },
+  ur: { code: "ur", name: "Urdu", supadataCode: "ur" },
+});
+
+function getTranslationLanguage(code) {
+  if (typeof YTD_SETTINGS.getTranslationLanguage === "function") {
+    return YTD_SETTINGS.getTranslationLanguage(code);
+  }
+  return FALLBACK_TRANSLATION_LANGUAGES[code] || FALLBACK_TRANSLATION_LANGUAGES.en;
+}
+
+function normalizedTranscriptLanguage(code) {
+  return String(code || "").trim().toLowerCase().split("-")[0];
+}
+
+function getReturnedTranscriptLanguage(data) {
+  if (typeof data?.lang === "string") return data.lang;
+  return data?.content?.find((chunk) => typeof chunk?.lang === "string")?.lang || null;
+}
+
+function requestedTranscriptLanguageUnavailable(data, requestedLanguage) {
+  const returnedLanguage = getReturnedTranscriptLanguage(data);
+  if (
+    !returnedLanguage ||
+    normalizedTranscriptLanguage(returnedLanguage) ===
+      normalizedTranscriptLanguage(requestedLanguage)
+  ) {
+    return null;
+  }
+  const available = Array.isArray(data?.availableLangs)
+    ? data.availableLangs.filter((language) => typeof language === "string")
+    : [];
+  return {
+    success: false,
+    error: "REQUESTED_LANGUAGE_UNAVAILABLE",
+    message: `The selected source language is unavailable. Supadata returned ${returnedLanguage}${available.length ? `; available: ${available.join(", ")}` : ""}.`,
+  };
+}
 
 async function loadPromptSection(fileName, heading, variables = {}) {
   let markdown = promptFileCache.get(fileName);
@@ -607,7 +657,10 @@ async function handleFetchTranscript(videoId) {
     const apiUrl = new URL("https://api.supadata.ai/v1/transcript");
     apiUrl.searchParams.set("url", canonicalVideoUrl);
     apiUrl.searchParams.set("text", "false"); // Get timestamped chunks, not plain text
-    apiUrl.searchParams.set("lang", "en"); // Prefer English
+    const requestedLanguage = getTranslationLanguage(
+      settings.sourceLanguage,
+    ).supadataCode;
+    apiUrl.searchParams.set("lang", requestedLanguage);
     // Caption-only product scope: never fall back to paid AI transcription.
     apiUrl.searchParams.set("mode", "native");
 
@@ -623,7 +676,11 @@ async function handleFetchTranscript(videoId) {
     if (response.status === 202) {
       const jobData = await response.json();
       // Poll for the result
-      return await pollTranscriptJob(jobData.jobId, settings.supadataApiKey);
+      return await pollTranscriptJob(
+        jobData.jobId,
+        settings.supadataApiKey,
+        requestedLanguage,
+      );
     }
 
     if (response.status === 206) {
@@ -664,6 +721,11 @@ async function handleFetchTranscript(videoId) {
     }
 
     const data = await response.json();
+    const unavailable = requestedTranscriptLanguageUnavailable(
+      data,
+      requestedLanguage,
+    );
+    if (unavailable) return unavailable;
 
     // Parse the response into our internal format
     // Supadata returns: { content: [{ text, offset, duration, lang }], lang, availableLangs }
@@ -733,7 +795,11 @@ async function handleFetchTranscript(videoId) {
  * @param {string} jobId - The job ID returned by the initial request
  * @returns {Object} - Same format as handleFetchTranscript
  */
-async function pollTranscriptJob(jobId, supadataApiKey) {
+async function pollTranscriptJob(
+  jobId,
+  supadataApiKey,
+  requestedLanguage,
+) {
   const maxAttempts = 60; // Max 60 seconds of polling
   const pollInterval = 1000; // Poll every 1 second
 
@@ -755,6 +821,11 @@ async function pollTranscriptJob(jobId, supadataApiKey) {
     const data = await response.json();
 
     if (data.status === "completed") {
+      const unavailable = requestedTranscriptLanguageUnavailable(
+        data,
+        requestedLanguage,
+      );
+      if (unavailable) return unavailable;
       // Parse the completed transcript
       const transcript = [];
       let transcriptTextPlain = "";
@@ -913,6 +984,7 @@ async function handleAnalyzeTranscript(
       channelName: channelName || "Unknown",
       videoDescription: videoDescription || "No description available",
       transcriptText,
+      sourceLanguage: getTranslationLanguage(settings.sourceLanguage).name,
     };
     const systemPrompt = await loadPromptSection(
       "analysis.md",
@@ -1092,6 +1164,8 @@ async function handleSaveNote(
   try {
     const canonicalVideoUrl = YTD_SETTINGS.canonicalYouTubeUrl(videoId);
     const safeTimestamp = Math.max(0, Math.floor(Number(timestamp) || 0));
+    const settings = await getSettings();
+    const sourceLanguage = getTranslationLanguage(settings.sourceLanguage);
 
     // First, try to get the transcript from the digest cache. The side panel
     // saves digests to chrome.storage.LOCAL — this used to look in
@@ -1099,9 +1173,10 @@ async function handleSaveNote(
     // refetched the transcript from Supadata on every saved note.
     let transcript = null;
     try {
-      const cached = await chrome.storage.local.get(`digest_${videoId}`);
-      if (cached[`digest_${videoId}`]?.transcript) {
-        transcript = cached[`digest_${videoId}`].transcript;
+      const cacheKey = `digest_${videoId}:${settings.sourceLanguage}`;
+      const cached = await chrome.storage.local.get(cacheKey);
+      if (cached[cacheKey]?.transcript) {
+        transcript = cached[cacheKey].transcript;
         debugLog("[YouTube Digest] Using cached transcript for note");
       }
     } catch (e) {
@@ -1190,6 +1265,7 @@ async function handleSaveNote(
       afterLine,
       contextLines.join(" "),
       videoTitle,
+      sourceLanguage.name,
     );
 
     // Format timestamp as MM:SS
@@ -1215,6 +1291,7 @@ async function handleSaveNote(
       timestampedUrl: timestampedUrl,
       text: cleanedText,
       rawText: matchedLine.text,
+      sourceLanguage: sourceLanguage.code,
       createdAt: Date.now(),
     };
 
@@ -1242,6 +1319,7 @@ async function cleanupNoteText(
   afterText,
   fullContext,
   videoTitle,
+  sourceLanguage = "English",
 ) {
   const settings = await getSettings();
   if (!settings.aiApiKey) {
@@ -1256,6 +1334,7 @@ async function cleanupNoteText(
       beforeText: beforeText || "(none)",
       targetText,
       afterText: afterText || "(none)",
+      sourceLanguage,
     };
     const systemPrompt = await loadPromptSection(
       "note-cleanup.md",
@@ -1414,7 +1493,7 @@ async function handleExplainSelection(
 }
 
 // ============================================================
-// TRANSLATION — Translate transcript batches into Simplified Chinese
+// TRANSLATION — Translate transcript batches into the configured target language
 // ============================================================
 // Uses a low temperature for consistent, natural translations.
 
@@ -1422,20 +1501,20 @@ async function handleExplainSelection(
  * Shared base rules that every translation prompt includes.
  * These ensure translations sound natural rather than machine-translated.
  *
- * @param {string} targetLanguage - Must be 'zh'
+ * @param {string} targetLanguage - A configured translation language code
  * @returns {Promise<string>} - The base translation rules
  */
 async function getTranslationBaseRules(targetLanguage) {
-  if (targetLanguage !== "zh") {
+  const language = getTranslationLanguage(targetLanguage);
+  if (language.code !== targetLanguage) {
     throw new Error(`Unsupported translation target: ${targetLanguage}`);
   }
-  const langName = "Simplified Chinese";
-  const langSpecific = await loadPromptSection(
-    "translation.md",
-    "Chinese rules",
-  );
+  const langSpecific =
+    language.code === "zh-CN"
+      ? await loadPromptSection("translation.md", "Chinese rules")
+      : "";
   return loadPromptSection("translation.md", "Shared base rules", {
-    langName,
+    langName: language.name,
     langSpecific,
   });
 }
@@ -1467,15 +1546,9 @@ function validateTranscriptBatchRequest(content) {
   return normalized;
 }
 
-function looksLikeChineseTranslation(text, sourceText) {
-  const latinLetters = (sourceText.match(/[A-Za-z]/g) || []).length;
-  if (latinLetters < 20) return true;
-  return /[\u3400-\u9fff]/.test(text);
-}
-
 /**
  * Aligns untrusted model output by exact stable ID. Missing, duplicated,
- * unknown, empty, or clearly non-Chinese values become explicit row errors.
+ * unknown, or empty values become explicit row errors.
  */
 function normalizeTranslatedSegmentBatch(parsed, sourceSegments) {
   const candidates = Array.isArray(parsed?.segments) ? parsed.segments : [];
@@ -1492,8 +1565,7 @@ function normalizeTranslatedSegmentBatch(parsed, sourceSegments) {
       return;
     }
     const text = candidate.text.trim();
-    const source = sourceById.get(candidate.id);
-    if (text && looksLikeChineseTranslation(text, source.text)) {
+    if (text) {
       translatedById.set(candidate.id, text);
     }
   });
@@ -1504,19 +1576,24 @@ function normalizeTranslatedSegmentBatch(parsed, sourceSegments) {
       text: translatedById.get(source.id) || "",
       error: translatedById.has(source.id)
         ? ""
-        : "Missing or invalid Chinese translation",
+        : "Missing or invalid translation",
     })),
   };
 }
 
 /**
  * Translates content using DeepSeek.
- * @param {Object} content - JSON object containing semantic transcript segments
- * @param {string} contentType - Must be 'transcriptBatch'
- * @param {string} targetLanguage - 'zh' for Simplified Chinese
+ * @param {Object} content - JSON object containing semantic segments
+ * @param {string} contentType - 'transcriptBatch' or 'overviewBatch'
+ * @param {string} targetLanguage - configured target language code
  * @param {string} videoTitle - The video title (for context)
  * @returns {Object} - { success, translatedContent } or { success: false, error }
  */
+const TRANSLATION_CONTENT_PROMPTS = Object.freeze({
+  transcriptBatch: "Transcript batch translation",
+  overviewBatch: "Overview batch translation",
+});
+
 async function handleTranslateContent(
   content,
   contentType,
@@ -1524,13 +1601,16 @@ async function handleTranslateContent(
   videoTitle,
 ) {
   try {
-    if (targetLanguage !== "zh") {
+    const normalizedTargetLanguage = targetLanguage === "zh" ? "zh-CN" : targetLanguage;
+    const target = getTranslationLanguage(normalizedTargetLanguage);
+    if (target.code !== normalizedTargetLanguage) {
       return {
         success: false,
         error: `Unsupported translation target: ${String(targetLanguage)}`,
       };
     }
-    if (contentType !== "transcriptBatch") {
+    const promptHeading = TRANSLATION_CONTENT_PROMPTS[contentType];
+    if (!promptHeading) {
       return {
         success: false,
         error: `Unsupported translation content type: ${String(contentType)}`,
@@ -1543,11 +1623,11 @@ async function handleTranslateContent(
     }
 
     const sourceSegments = validateTranscriptBatchRequest(content);
-    const langName = "Simplified Chinese";
-    const baseRules = await getTranslationBaseRules(targetLanguage);
+    const langName = target.name;
+    const baseRules = await getTranslationBaseRules(normalizedTargetLanguage);
     const systemPrompt = await loadPromptSection(
       "translation.md",
-      "Transcript batch translation",
+      promptHeading,
       {
         langName,
         videoTitle: videoTitle || "Unknown",
@@ -1630,6 +1710,7 @@ async function callAiTranslation(
 
 // Pure validators are exposed for the repository's Node tests only.
 globalThis.__YTD_TRANSLATION_TESTING__ = {
+  handleFetchTranscript,
   requestAiCompletion,
   callAiTranslation,
   validateTranscriptBatchRequest,

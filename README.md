@@ -5,7 +5,7 @@
 Turn every YouTube video into a resource for deep learning. YouTube Digest brings transcripts, bilingual translation, AI overviews, explanations, and timestamped notes into one Chrome side panel, so you can study ideas and language without losing your place.
 
 - Turn captions into a readable, searchable learning resource.
-- Learn languages with the original transcript, a Simplified Chinese translation, or an aligned bilingual view.
+- Learn languages with the original transcript, a translation into one of 13 supported languages, or an aligned bilingual view.
 - Build understanding with an AI overview, chapters, key quotes, and selected-text explanations.
 - Navigate long videos by clicking timestamps in the transcript, overview, or notes.
 - Save polished timestamped notes for later study.
@@ -91,17 +91,21 @@ Keys and settings are stored in Chrome's local extension storage on your device.
 
 1. Open a standard YouTube watch page with captions.
 2. Click the YouTube Digest extension icon to open the side panel.
-3. Read the timestamped transcript, or choose **Original**, **中文**, or **双语**.
-4. Open **Overview** when you want AI-generated chapters and key quotes.
+3. Read the timestamped transcript, or switch between the original language, its translation, and an aligned bilingual view. A back-to-top button appears in the bottom-right corner once you scroll deep into the transcript.
+4. Open **Overview** when you want AI-generated chapters and key quotes. It has the same language switch, and translated chapters and quotes are cached per video.
 5. Select transcript text when you want an AI explanation.
-6. Save a note from the player or a key quote, then revisit it from **Notes**.
+6. Save a note from the player or a key quote, then revisit it from **Notes**, which offers the same original, translated, and bilingual views.
+
+The side panel interface follows the language you pick in Settings: switch between English and 中文 there, and the panel labels switch with it. Settings also let you choose the original and target translation languages from 13 options; translations and their cache are kept separately per language pair. Content modes always start on the original language until you choose a translation.
 
 ## What works today
 
 - Google Chrome 116 or newer, using the Side Panel API.
 - Standard `youtube.com/watch` video pages.
-- Native subtitle tracks returned by Supadata. YouTube Digest prefers English when available, but may show another native language.
-- Original, Simplified Chinese, and aligned bilingual transcript views.
+- Native subtitle tracks returned by Supadata. YouTube Digest requests the original language you pick in Settings and prefers English by default, but may show another native language.
+- Original, translated, and aligned bilingual views for transcripts, AI overviews (chapters and key quotes), and saved notes.
+- 13 translation languages (English, Simplified Chinese, Traditional Chinese, Japanese, Korean, Hindi, Spanish, French, Arabic, Bengali, Portuguese, Russian, Urdu) selectable as the original and target pair in Settings, with translations cached per video and language pair.
+- English and Simplified Chinese interface copy, following the preferred language saved in Settings.
 - AI overviews, selected-text explanations, translation, and automatic note polishing.
 - Local notes and a local cache for recent transcript and digest results.
 - DeepSeek V4 Flash for all published AI features. Other providers require a local code adaptation and are not supported by this published version.
@@ -146,7 +150,6 @@ This is a personal remix project. Upstream issues and pull requests are not acce
 
 YouTube Digest uses plain HTML, CSS, and JavaScript with no build step, so it is a friendly starting point for agent-assisted projects. Ideas to try:
 
-- Add more translation languages and let each person choose a learning language.
 - Create customized summary templates for lectures, interviews, tutorials, reviews, or research talks.
 - Build a vocabulary notebook that saves a word, its sentence, meaning, and video timestamp.
 - Export notes and vocabulary to Markdown, CSV, Anki, or another study tool.

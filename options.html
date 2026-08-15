@@ -10,32 +10,8 @@
     <main class="settings-shell">
       <header>
         <div class="settings-heading-row">
-          <div class="eyebrow">YouTube Digest</div>
-          <div
-            class="language-switch"
-            role="group"
-            aria-label="Interface language"
-            data-i18n-aria-label="languageGroupLabel"
-          >
-            <button
-              class="language-option"
-              type="button"
-              data-language="en"
-              aria-pressed="true"
-            >
-              English
-            </button>
-            <button
-              class="language-option"
-              type="button"
-              data-language="zh-CN"
-              aria-pressed="false"
-            >
-              中文
-            </button>
-          </div>
+          <h1 data-i18n="heading">Bring your own API keys</h1>
         </div>
-        <h1 data-i18n="heading">Bring your own API keys</h1>
         <p class="lede" data-i18n="lede">
           Keys stay in this Chrome profile and are sent only to Supadata and
           DeepSeek. This open-source extension has no developer server or
@@ -43,20 +19,35 @@
         </p>
       </header>
 
-      <form id="settingsForm">
+      <div id="settingsForm">
+        <section class="card">
+          <h2 data-i18n="translationLanguages">Language settings</h2>
+          <div class="translation-language-grid">
+            <label for="interfaceLanguage" data-i18n="languageGroupLabel">Interface language</label>
+            <select id="interfaceLanguage" class="language-control" aria-label="Interface language" data-i18n-aria-label="languageGroupLabel"></select>
+            <label for="sourceLanguage" data-i18n="sourceLanguageLabel">Original language</label>
+            <select id="sourceLanguage" class="language-control" name="sourceLanguage"></select>
+            <label for="targetLanguage" data-i18n="targetLanguageLabel">Target language</label>
+            <select id="targetLanguage" class="language-control" name="targetLanguage"></select>
+          </div>
+          <p class="help" data-i18n="translationLanguagesHelp">New transcript requests use the selected original language. Translations and their cache are kept separately for each language pair.</p>
+        </section>
         <section class="card">
           <h2 data-i18n="transcriptProvider">Transcript provider</h2>
           <label for="supadataApiKey" data-i18n="supadataApiKeyLabel"
             >Supadata API key</label
           >
-          <input
-            id="supadataApiKey"
-            name="supadataApiKey"
-            type="password"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Paste your Supadata key"
-          />
+          <div class="api-key-input">
+            <input
+              id="supadataApiKey"
+              name="supadataApiKey"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Paste your Supadata key"
+            />
+            <button class="api-key-visibility" type="button" data-api-key-toggle="supadataApiKey" data-i18n="showApiKey">Show</button>
+          </div>
           <p class="help">
             <span data-i18n="supadataHelp"
               >Used to fetch timestamped YouTube subtitles.</span
@@ -89,14 +80,17 @@
           <label for="aiApiKey" data-i18n="deepseekApiKeyLabel"
             >DeepSeek API key</label
           >
-          <input
-            id="aiApiKey"
-            name="aiApiKey"
-            type="password"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Paste your DeepSeek key"
-          />
+          <div class="api-key-input">
+            <input
+              id="aiApiKey"
+              name="aiApiKey"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Paste your DeepSeek key"
+            />
+            <button class="api-key-visibility" type="button" data-api-key-toggle="aiApiKey" data-i18n="showApiKey">Show</button>
+          </div>
           <p class="help">
             <span data-i18n="deepseekHelp"
               >YouTube Digest uses DeepSeek V4 Flash for overviews,
@@ -117,18 +111,11 @@
           </div>
         </section>
 
-        <div class="form-actions">
-          <button class="primary" type="submit" data-i18n="saveSettings">
-            Save settings
-          </button>
-          <span id="saveStatus" role="status" aria-live="polite"></span>
-        </div>
-      </form>
+      </div>
 
       <details class="card customization-card">
         <summary class="customization-summary">
           <span class="customization-summary-copy">
-            <span class="eyebrow" data-i18n="localRemix">Local remix</span>
             <span class="customization-title" data-i18n="customizationTitle"
               >Want to use another AI model?</span
             >
@@ -198,11 +185,13 @@
         </p>
         <div class="data-actions">
           <button id="clearCacheBtn" type="button" data-i18n="clearCache">
-            Clear cached digests
+            Clear all caches
           </button>
           <button id="clearNotesBtn" type="button" data-i18n="deleteNotes">
             Delete all notes
           </button>
+        </div>
+        <div class="danger-zone">
           <button
             id="resetBtn"
             class="danger"

@@ -240,6 +240,17 @@ test("Digest button skips a hidden responsive toolbar", () => {
   assert.match(visibleGroup.children[0].style.cssText, /width:\s*max-content/);
 });
 
+test("stale extension contexts are ignored when opening the side panel", () => {
+  assert.match(
+    contentScript,
+    /function isExtensionContextInvalidated\(error\)/,
+  );
+  assert.match(
+    contentScript,
+    /if \(isExtensionContextInvalidated\(err\)\) \{[\s\S]*?return;/,
+  );
+});
+
 test("Digest button replaces stale instances and removes duplicates", () => {
   const harness = createHarness();
   const { row: staleRow, buttonGroup: staleGroup } = createActionRow({

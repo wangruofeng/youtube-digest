@@ -61,3 +61,26 @@ test("Supadata receives a canonical YouTube URL", () => {
     /Invalid YouTube video ID/,
   );
 });
+
+test("translation languages preserve English source and use the system language for target", () => {
+  const defaults = settings.normalize({}, "ja-JP");
+  assert.equal(defaults.sourceLanguage, "en");
+  assert.equal(defaults.targetLanguage, "ja");
+
+  const configured = settings.normalize({
+    sourceLanguage: "ja",
+    targetLanguage: "fr",
+  });
+  assert.equal(configured.sourceLanguage, "ja");
+  assert.equal(configured.targetLanguage, "fr");
+  assert.equal(settings.TRANSLATION_LANGUAGES.length, 13);
+  assert.equal(settings.getTranslationLanguage("fr").nativeName, "Français");
+  assert.equal(settings.normalize({ sourceLanguage: "invalid" }).sourceLanguage, "en");
+  assert.equal(
+    settings.normalize({ targetLanguage: "invalid" }, "unsupported").targetLanguage,
+    "zh-CN",
+  );
+  assert.equal(settings.getSystemTranslationLanguage("fr-CA"), "fr");
+  assert.equal(settings.getSystemTranslationLanguage("zh-HK"), "zh-CN");
+  assert.equal(settings.getSystemTranslationLanguage("de-DE"), "zh-CN");
+});

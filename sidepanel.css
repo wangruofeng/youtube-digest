@@ -225,89 +225,6 @@ body {
 }
 
 /* ============================================================
-   SUMMARY BOX — The main insight at the top
-   ============================================================ */
-.summary-box {
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  border-left: 4px solid var(--accent);
-  padding: 20px 22px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-md);
-}
-
-.summary-text {
-  font-family: var(--font-reading);
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--text);
-}
-
-/* ============================================================
-   WORTH WATCHING IF — The 3 bullet points
-   ============================================================ */
-.worth-section {
-  margin-bottom: 26px;
-}
-
-.worth-label {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 16px;
-  letter-spacing: -0.2px;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.worth-list {
-  list-style: none;
-}
-
-.worth-item {
-  font-family: var(--font-reading);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  padding: 11px 0 11px 26px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-
-.worth-item::before {
-  content: "→";
-  position: absolute;
-  left: 0;
-  top: 11px;
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.worth-item:last-child {
-  border-bottom: none;
-}
-
-/* ============================================================
-   TAGS — soft sage pills
-   ============================================================ */
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 26px;
-}
-
-.tag {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 11.5px;
-  letter-spacing: 0.2px;
-  padding: 5px 12px;
-  border-radius: var(--r-pill);
-  color: var(--sage);
-  background: var(--sage-dim);
-}
-
-/* ============================================================
    SECTION TITLES
    ============================================================ */
 .section {
@@ -339,7 +256,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 10px;
+}
+
+.transcript-header-main .transcript-mode-control {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.transcript-header-main .section-title {
+  white-space: nowrap;
 }
 
 .transcript-mode-control {
@@ -353,7 +280,9 @@ body {
   white-space: nowrap;
 }
 
-.transcript-mode-btn {
+.transcript-mode-btn,
+.overview-mode-btn,
+.notes-mode-btn {
   padding: 4px 8px;
   border: 0;
   border-radius: var(--r-pill);
@@ -363,14 +292,33 @@ body {
   font: 600 10.5px/1.3 var(--font-body);
 }
 
-.transcript-mode-btn:hover {
+.transcript-mode-btn:hover,
+.overview-mode-btn:hover,
+.notes-mode-btn:hover {
   color: var(--accent);
 }
 
-.transcript-mode-btn.active {
+.transcript-mode-btn.active,
+.overview-mode-btn.active,
+.notes-mode-btn.active {
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow-sm);
+}
+
+/* Chinese translation shown beneath the original overview text */
+.overview-translation {
+  display: block;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+}
+
+.chapter-title .overview-translation,
+.quote-text .overview-translation {
+  font-size: 12.5px;
+  color: var(--text-secondary);
 }
 
 .translation-spinner {
@@ -448,6 +396,117 @@ body {
   list-style: none;
 }
 
+/* Skeleton chapter/quote cards shown while the AI analysis runs (10–30s).
+   They mirror the real card anatomy — timestamp pill + two text bars for a
+   chapter, a wide bar + short meta bar for a quote — so the layout the user
+   first sees is the layout they land in. */
+.skeleton-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 9px;
+  background: var(--surface);
+}
+
+.skeleton-card--quote {
+  display: block;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton-card--chapter::before {
+  content: "";
+  width: 46px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  background: var(--accent-dim);
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    100deg,
+    var(--border) 40%,
+    var(--surface-raised) 50%,
+    var(--border) 60%
+  );
+  background-size: 200% 100%;
+  animation: skeletonSweep 1.6s ease-in-out infinite;
+}
+
+.skeleton-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 3px;
+}
+
+.skeleton-line--title {
+  width: 55%;
+}
+
+.skeleton-line--summary {
+  width: 88%;
+  animation-delay: 0.18s;
+}
+
+.skeleton-card--quote .skeleton-line {
+  margin-bottom: 12px;
+}
+
+.skeleton-card--quote .skeleton-line--quote-text {
+  width: 92%;
+}
+
+.skeleton-card--quote .skeleton-line--quote-meta {
+  width: 90px;
+  margin-bottom: 0;
+  animation-delay: 0.18s;
+}
+
+/* Shared status row (loading label / analysis errors) inside the chapter
+   and quote lists — replaces per-call inline styles. */
+.list-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border: none;
+  border-radius: var(--r-md);
+  margin-bottom: 9px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.list-status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.55;
+}
+
+.list-status.list-status--error {
+  color: var(--accent);
+  align-items: flex-start;
+}
+
+.list-status.list-status--error::before {
+  background: var(--accent);
+  opacity: 1;
+}
+
 .chapter-item {
   display: flex;
   align-items: flex-start;
@@ -459,6 +518,8 @@ body {
   transition: all 0.18s ease;
   background: var(--surface);
   cursor: pointer;
+  animation: listReveal 0.32s ease both;
+  animation-delay: var(--reveal-i, 0);
 }
 
 .chapter-item:hover {
@@ -478,6 +539,25 @@ body {
   border-radius: var(--r-sm);
   text-align: center;
   flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+/* Hover completes the affordance: the timestamp pill fills with terracotta,
+   signalling "click to jump here" the same way .note-timestamp does. */
+.chapter-item:hover .chapter-timestamp {
+  background: var(--accent);
+  color: #fff;
+}
+
+@keyframes listReveal {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .chapter-content {
@@ -485,6 +565,45 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.card-copy-icon {
+  align-self: flex-start;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: color 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+}
+
+.transcript-entry:hover .card-copy-icon,
+.chapter-item:hover .card-copy-icon,
+.card-copy-icon:focus-visible {
+  opacity: 1;
+}
+
+/* Copy only makes sense once the row's content is final. Rows still
+   translating (or whose translation failed) keep the button hidden even
+   on hover — the text they would copy is not settled yet. */
+.transcript-entry.translating .card-copy-icon,
+.transcript-entry.translation-failed .card-copy-icon {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-copy-icon:hover,
+.card-copy-icon:focus-visible {
+  background: var(--accent-dim);
+  color: var(--accent);
 }
 
 .chapter-title {
@@ -504,8 +623,11 @@ body {
 /* ============================================================
    KEY QUOTES
    ============================================================ */
+/* Quotes are list items, not asides — no colored spine at rest. The
+   oversized quotation mark carries "this is a quote"; the hover border
+   carries "click to seek", same language as chapter cards. */
 .quote-item {
-  border-left: 4px solid var(--accent);
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 16px 18px;
   margin-bottom: 14px;
@@ -513,9 +635,12 @@ body {
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all 0.18s ease;
+  animation: listReveal 0.32s ease both;
+  animation-delay: var(--reveal-i, 0);
 }
 
 .quote-item:hover {
+  border-color: var(--accent);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -574,6 +699,14 @@ body {
   background: var(--accent-dim);
 }
 
+/* Quote copy controls are icon-only: center the SVG and size the hit area. */
+.quote-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+}
+
 .quote-save-note-btn:disabled {
   opacity: 0.7;
   cursor: default;
@@ -624,9 +757,23 @@ body {
   gap: 12px;
   padding: 11px 10px;
   border-radius: var(--r-sm);
-  margin-bottom: 2px;
+  /* Enough air between rows that hover backgrounds read as separate
+     cards; tight enough that the list still scans as one column. */
+  margin-bottom: 6px;
   transition: background 0.14s ease;
   cursor: pointer;
+  /* Fade only — no per-row stagger, no translate. This list re-renders on
+     every mode switch and translation batch; motion here would jump. */
+  animation: listFade 0.25s ease both;
+}
+
+@keyframes listFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .transcript-entry:hover {
@@ -652,6 +799,10 @@ body {
 .transcript-copy {
   min-width: 0;
   flex: 1;
+}
+
+.transcript-card-copy {
+  margin-top: -2px;
 }
 
 .transcript-original,
@@ -688,85 +839,13 @@ body {
   font: 600 10px/1.4 var(--font-body);
 }
 
-@media (max-width: 390px) {
-  .transcript-header-main {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
+/* Enhanced transcript paragraphs — the .transcript-paragraph block was
+   removed with its legacy renderer; entries below are the live path. */
 
-/* Enhanced transcript paragraphs */
-.transcript-paragraph {
-  font-family: var(--font-reading);
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.8;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.transcript-paragraph:last-child {
-  border-bottom: none;
-}
-
-.transcript-paragraph.translating {
-  color: var(--text-muted);
-  position: relative;
-}
-
-.transcript-paragraph.translating::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  border-radius: var(--r-pill);
-  background: var(--accent);
-  opacity: 0.4;
-  animation: paraPulse 1.2s ease-in-out infinite;
-}
-
-@keyframes paraPulse {
-  0%,
-  100% {
-    opacity: 0.2;
-    width: 40px;
-  }
-  50% {
-    opacity: 0.6;
-    width: 80px;
-  }
-}
-
-.transcript-paragraph.translated {
-  animation: fadeIn 0.3s ease;
-}
-
-.transcript-entry.translating {
-  position: relative;
-}
-
+/* Awaiting translation: the muted ink alone says "pending". No pulse bar,
+   no re-fade when the batch lands — content swaps are visible on their own. */
 .transcript-entry.translating .transcript-text {
   color: var(--text-muted);
-}
-
-.transcript-entry.translating::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  border-radius: var(--r-pill);
-  background: var(--accent);
-  opacity: 0.4;
-  animation: paraPulse 1.2s ease-in-out infinite;
-}
-
-.transcript-entry.translated {
-  animation: fadeIn 0.3s ease;
 }
 
 /* Active playback highlight */
@@ -806,6 +885,43 @@ body {
   transform: translateX(-50%) translateY(-1px);
 }
 
+/* Back-to-top button — small floating disc in the bottom-right corner.
+   Shown only on the Transcript tab once the user has scrolled well past
+   the start, so it never competes with the centered follow-playback pill. */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 18px;
+  right: 16px;
+  z-index: 100;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.18s ease;
+}
+
+.back-to-top-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.back-to-top-btn:focus-visible {
+  outline: 3px solid var(--accent-hover);
+  outline-offset: 2px;
+}
+
 /* ============================================================
    LOADING STATE
    ============================================================ */
@@ -818,33 +934,63 @@ body {
   gap: 24px;
 }
 
-.loading-bar {
-  width: 200px;
-  height: 5px;
-  background: var(--border);
-  border-radius: var(--r-pill);
-  position: relative;
-  overflow: hidden;
+/* Skeleton preview of the transcript itself: each row is a mono timestamp
+   block (the exact width of a real "12:34") beside a bar of "text".
+   The staggered shimmer delay makes the sweep read top-to-bottom, the way
+   captions arrive. Warm tones only — these sit on the cream background. */
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(300px, 80%);
 }
 
-.loading-bar::after {
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Timestamp block — matches .transcript-time metrics (mono, 46px min) */
+.skeleton-row::before {
   content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  border-radius: var(--r-pill);
-  background: var(--accent);
-  animation: loading 1.5s ease-in-out infinite;
+  width: 46px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--accent-dim);
 }
 
-@keyframes loading {
-  0% {
-    left: -60%;
+/* Text bar — width varies per row via --bar-w */
+.skeleton-row::after {
+  content: "";
+  width: var(--bar-w, 85%);
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    100deg,
+    var(--border) 40%,
+    var(--surface-raised) 50%,
+    var(--border) 60%
+  );
+  background-size: 200% 100%;
+  animation: skeletonSweep 1.6s ease-in-out infinite;
+}
+
+.skeleton-row:nth-child(2)::after {
+  animation-delay: 0.18s;
+}
+
+.skeleton-row:nth-child(3)::after {
+  animation-delay: 0.36s;
+}
+
+@keyframes skeletonSweep {
+  from {
+    background-position: 120% 0;
   }
-  100% {
-    left: 100%;
+  to {
+    background-position: -80% 0;
   }
 }
 
@@ -1175,14 +1321,18 @@ body {
 /* Segmented filter control (This Video / All Notes) */
 .notes-filter {
   display: flex;
+  width: fit-content;
+  margin-left: auto;
   gap: 3px;
+  margin-top: -4px;
+  margin-bottom: 14px;
   padding: 3px;
   background: var(--surface-raised);
   border-radius: var(--r-pill);
 }
 
 .notes-filter .enhance-btn {
-  padding: 5px 12px;
+  padding: 5px 9px;
   font-size: 11px;
   border: none;
   background: none;
@@ -1232,6 +1382,8 @@ body {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   transition: all 0.18s ease;
+  animation: listReveal 0.32s ease both;
+  animation-delay: var(--reveal-i, 0);
 }
 
 .note-item:hover {
@@ -1297,6 +1449,18 @@ body {
   margin-bottom: 12px;
 }
 
+.note-original,
+.note-translation {
+  display: block;
+}
+
+.note-translation {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
 .note-actions {
   display: flex;
   gap: 8px;
@@ -1319,4 +1483,29 @@ body {
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-dim);
+}
+
+/* Notes copy buttons pair the icon with their distinguishing label. */
+.note-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ============================================================
+   REDUCED MOTION — strip the reveal choreography and skeleton
+   sweeps; keep flat static placeholders so layout still previews.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row::after,
+  .skeleton-line {
+    animation: none;
+  }
+
+  .transcript-entry,
+  .chapter-item,
+  .quote-item,
+  .note-item {
+    animation: none;
+  }
 }

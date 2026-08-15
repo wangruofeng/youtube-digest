@@ -18,6 +18,10 @@ const debugLog = (...args) => {
   if (DEBUG) console.log(...args);
 };
 
+function isExtensionContextInvalidated(error) {
+  return /Extension context invalidated/i.test(String(error?.message || error));
+}
+
 // ============================================================
 // GLOBAL STATE
 // ============================================================
@@ -233,7 +237,6 @@ function createDigestButton() {
   digestButton.type = "button";
   digestButton.setAttribute("aria-label", "Open YouTube Digest");
   digestButton.innerHTML = `
-    <span class="ytd-digest-icon" style="font-size: 11px;">▶</span>
     <span class="ytd-digest-label">Digest</span>
   `;
 
@@ -289,6 +292,13 @@ function createDigestButton() {
       });
       debugLog("[YouTube Digest] openSidePanel response:", result);
     } catch (err) {
+      // A page can retain an old content script after the extension is
+      // reloaded. Its runtime port is gone until the page refreshes, which is
+      // expected and should not surface as a side-panel failure.
+      if (isExtensionContextInvalidated(err)) {
+        debugLog("[YouTube Digest] Extension reloaded; waiting for page refresh");
+        return;
+      }
       console.error("[YouTube Digest] Failed to open side panel:", err);
     }
   });
@@ -645,11 +655,11 @@ function showNoteSavedToast(note) {
   const toast = document.createElement("div");
   toast.id = "ytd-note-toast";
   toast.innerHTML = `
-    <div style="font-weight: 700; margin-bottom: 6px; color: #c8674f;">📝 Note saved</div>
+    <div style="font-weight: 700; margin-bottom: 6px; color: #c8674f;">Note saved</div>
     <div style="font-size: 12px; color: #6b6258; margin-bottom: 8px;">${escapeHtmlForContent(note.timestamp)} — ${escapeHtmlForContent(note.videoTitle)}</div>
     <div style="font-size: 13px; line-height: 1.55; color: #2e2a24;">"${escapeHtmlForContent(note.text)}"</div>
     <div style="margin-top: 10px; font-size: 11px;">
-      <a href="${escapeHtmlForContent(note.timestampedUrl)}" style="color: #c8674f; font-weight: 600; text-decoration: none;">🔗 Copy link</a>
+      <a href="${escapeHtmlForContent(note.timestampedUrl)}" style="color: #c8674f; font-weight: 600; text-decoration: none;">Copy link</a>
     </div>
   `;
 

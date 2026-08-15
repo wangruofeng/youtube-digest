@@ -83,7 +83,10 @@ test("release copy documents current scope without em dashes", () => {
     /选择你刚才确定的那个准确项目文件夹，其中必须包含 `manifest\.json`/,
   );
   assert.match(chineseReadme, /不接受上游 Issue 或 Pull Request/);
-  assert.match(chineseReadme, /增加更多翻译语言/);
+  // The multi-language translation roadmap item shipped: both READMEs now
+  // document the selectable language pair instead of planning it.
+  assert.match(chineseReadme, /13 种翻译语言/);
+  assert.doesNotMatch(chineseReadme, /增加更多翻译语言/);
 
   assert.match(readme, /100 credits per month/i);
   assert.match(readme, /native transcript request uses \*\*1 credit\*\*/i);
@@ -123,7 +126,8 @@ test("release copy documents current scope without em dashes", () => {
   const optionsScript = read("options.js");
   assert.match(optionsPage, /dash\.supadata\.ai\/auth\/sign-up/i);
   assert.match(optionsPage, /platform\.deepseek\.com\/api_keys/i);
-  assert.doesNotMatch(optionsPage, /<select\b/i);
+  assert.match(optionsPage, /<select id="sourceLanguage"/);
+  assert.match(optionsPage, /<select id="targetLanguage"/);
   assert.doesNotMatch(optionsPage, /id="(?:provider|aiBaseUrl|aiModel)"/);
   const detailsTag = optionsPage.match(
     /<details\b[^>]*class="card customization-card"[^>]*>/,
@@ -157,7 +161,8 @@ test("release copy documents current scope without em dashes", () => {
   assert.doesNotMatch(customizationPrompt, /Documents|USERPROFILE/);
 
   assert.match(readme, /^## Remix it with your coding agent$/m);
-  assert.match(readme, /more translation languages/i);
+  assert.match(readme, /13 translation languages/i);
+  assert.doesNotMatch(readme, /more translation languages/i);
   assert.match(readme, /customized summary templates/i);
   assert.match(readme, /vocabulary notebook/i);
   assert.match(
@@ -248,6 +253,7 @@ test("published prompt files contain runtime sections", () => {
       "Shared base rules",
       "Chinese rules",
       "Transcript batch translation",
+      "Overview batch translation",
     ],
   };
 

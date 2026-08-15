@@ -30,8 +30,9 @@ The published version sends AI feature content to DeepSeek V4 Flash at `https://
 
 - transcript plus relevant title, channel, description, or duration for an overview;
 - selected text plus nearby transcript context for an explanation;
-- small semantic transcript batches currently needed for progressive Chinese
-  translation, or requested overview or explanation content;
+- small semantic transcript, overview, or note segments for progressive
+  translation into your chosen target language, or requested overview or
+  explanation content;
 - nearby transcript context and video metadata when polishing a saved note.
 
 The endpoint and `deepseek-v4-flash` model are fixed in the published Settings page. You provide one DeepSeek API key. To use another provider or model, you must adapt your own local source copy and its permissions. The Settings page provides a coding-agent prompt for that purpose and warns you never to include an API key in the prompt or chat.

@@ -32,12 +32,11 @@ function createLocalStorage() {
 test("Settings copy covers English and Simplified Chinese", () => {
   assert.equal(options.translate("en", "pageTitle"), "YouTube Digest Settings");
   assert.equal(options.translate("zh-CN", "pageTitle"), "YouTube Digest 设置");
-  assert.equal(options.translate("en", "saveSettings"), "Save settings");
-  assert.equal(options.translate("zh-CN", "saveSettings"), "保存设置");
   assert.equal(
     options.translate("zh-CN", "clearedDigests", { count: 2 }),
-    "已清除 2 条缓存摘要。",
+    "已清除 2 条缓存。",
   );
+  assert.equal(options.translate("zh-CN", "showApiKey"), "显示");
 
   assert.deepEqual(
     Object.keys(options.COPY.en).sort(),
@@ -82,6 +81,15 @@ test("language preference persists through extension-compatible storage", async 
   assert.equal(await options.readPreferredLanguage(storage), "zh-CN");
 });
 
+test("missing interface language follows the system locale and falls back to Simplified Chinese", async () => {
+  const storage = options.createStorageAdapter(null, createLocalStorage());
+
+  assert.equal(await options.readPreferredLanguage(storage, "ja-JP"), "ja");
+  assert.equal(await options.readPreferredLanguage(storage, "fr-CA"), "fr");
+  assert.equal(await options.readPreferredLanguage(storage, "de-DE"), "zh-CN");
+  assert.equal(options.resolveSystemLanguage("zh-HK"), "zh-CN");
+});
+
 test("non-extension preview safely persists language in localStorage", async () => {
   const localStorage = createLocalStorage();
   const firstSession = options.createStorageAdapter(null, localStorage);
@@ -93,32 +101,29 @@ test("non-extension preview safely persists language in localStorage", async () 
   assert.equal(options.normalizeLanguage("unsupported"), "en");
 });
 
-test("language controls expose a labelled group and one pressed button", () => {
+test("language and translation controls expose compact selects", () => {
   const html = read("options.html");
   assert.match(
     html,
-    /class="language-switch"[\s\S]*role="group"[\s\S]*aria-label="Interface language"/,
+    /<select id="interfaceLanguage"[^>]*aria-label="Interface language"/,
   );
+  assert.match(html, /<select id="sourceLanguage" class="language-control" name="sourceLanguage"><\/select>/);
+  assert.match(html, /<select id="targetLanguage" class="language-control" name="targetLanguage"><\/select>/);
+  assert.equal(Object.keys(options.INTERFACE_LANGUAGE_NAMES).length, 13);
   assert.match(
-    html,
-    /data-language="en"[\s\S]*aria-pressed="true"[\s\S]*English/,
+    read("options.css"),
+    /\.translation-language-grid select\s*\{[^}]*width:\s*108px;/,
   );
-  assert.match(
-    html,
-    /data-language="zh-CN"[\s\S]*aria-pressed="false"[\s\S]*中文/,
-  );
-
-  const buttons = ["en", "zh-CN"].map((language) => ({
-    dataset: { language },
-    attributes: {},
-    setAttribute(name, value) {
-      this.attributes[name] = value;
-    },
-  }));
-  options.updateLanguageButtonState(buttons, "zh-CN");
-
-  assert.equal(buttons[0].attributes["aria-pressed"], "false");
-  assert.equal(buttons[1].attributes["aria-pressed"], "true");
+  assert.match(read("options.js"), /function saveSettingsSilently\(\)/);
+  assert.match(read("options.js"), /supadataApiKey: supadataApiKeyInput\.value/);
+  assert.match(read("options.js"), /supadataApiKeyInput\.addEventListener\("input", \(\) => \{/);
+  assert.match(read("options.js"), /key === "ytd_note_translation_cache"/);
+  assert.match(read("options.js"), /chrome\?\.storage\?\.onChanged\?\.addListener\?/);
+  assert.match(read("options.js"), /sourceLanguageSelect\.value = settings\.sourceLanguage/);
+  assert.match(read("options.js"), /sourceLanguageSelect\.addEventListener\("change"/);
+  assert.match(read("options.js"), /targetLanguageSelect\.addEventListener\("change"/);
+  assert.match(html, /data-api-key-toggle="supadataApiKey"/);
+  assert.match(html, /data-api-key-toggle="aiApiKey"/);
 });
 
 test("customization guidance is concise and has a visible placeholder reminder", () => {

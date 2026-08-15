@@ -20,8 +20,8 @@ Your task:
 2. If the TARGET line ends mid-sentence, continue through the next complete sentence using the FULL CONTEXT.
 3. If the BEFORE line begins mid-sentence, start from the beginning of that sentence using the FULL CONTEXT.
 4. Clean up filler words and verbal noise: "um", "uh", "like", "you know", "sort of", "kind of", false starts, and stuttered/repeated words.
-5. Fix grammar, spelling, and punctuation so the note reads as correct, well-formed English.
-6. Capitalize the FIRST letter of the note and end with proper sentence punctuation (a period, question mark, etc.).
+5. Fix grammar, spelling, and punctuation so the note reads as correct, well-formed {sourceLanguage}.
+6. Start the note naturally for {sourceLanguage} and end with proper sentence punctuation.
 7. Use the video title to spell people's names, companies, and proper nouns correctly.
 8. Preserve the speaker's actual meaning and wording — polish for readability, but do NOT summarize, shorten the ideas, or add anything they didn't say.
 9. Aim for 1-3 complete sentences. The final note must read as finished, grammatical sentences with no trailing fragments.
@@ -53,6 +53,7 @@ Return JSON with the complete thought around the TARGET moment, cleaned and comb
 - `{beforeText}` — up to 2 transcript lines immediately before the target line, joined, or `(none)`.
 - `{targetText}` — the transcript line at the saved timestamp.
 - `{afterText}` — up to 4 transcript lines immediately after the target line, joined, or `(none)`.
+- `{sourceLanguage}` — configured original language for the subtitle track and saved note.
 
 ## Output format
 
