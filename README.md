@@ -13,6 +13,35 @@ Turn every YouTube video into a resource for deep learning. YouTube Digest bring
 
 YouTube Digest is a bring-your-own-key project installed locally from GitHub. It is not available through the Chrome Web Store, does not include API credits, and does not run a developer-operated server.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td>Overview</td>
+    <td>Overview in Japanese</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/overview_english.webp" alt="YouTube Digest overview in English" width="600"></td>
+    <td><img src="docs/images/overview_japanese.webp" alt="YouTube Digest overview in Japanese" width="600"></td>
+  </tr>
+  <tr>
+    <td>Bilingual subtitles</td>
+    <td>Japanese subtitles</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/subtitles_english_and_japanese.webp" alt="English and Japanese bilingual subtitles" width="600"></td>
+    <td><img src="docs/images/subtitles_japanese.webp" alt="Japanese subtitles" width="600"></td>
+  </tr>
+  <tr>
+    <td>Notes</td>
+    <td>Settings</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/note_english.webp" alt="YouTube Digest notes in English" width="600"></td>
+    <td><img src="docs/images/setting_page.webp" alt="YouTube Digest settings page" width="600"></td>
+  </tr>
+</table>
+
 ## Install with your coding agent
 
 You do not need to understand the code or use the command line. Send this message to your coding agent:

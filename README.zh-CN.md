@@ -13,6 +13,35 @@
 
 YouTube Digest 是一个需要自行提供 API Key 的开源项目，通过 GitHub 安装。目前没有上架 Chrome 应用商店，不赠送 API 额度，也没有开发者运营的服务器。
 
+## 演示图片
+
+<table>
+  <tr>
+    <td>概览</td>
+    <td>日语概览</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/overview_english.webp" alt="英文界面的 YouTube Digest 概览" width="600"></td>
+    <td><img src="docs/images/overview_japanese.webp" alt="日语界面的 YouTube Digest 概览" width="600"></td>
+  </tr>
+  <tr>
+    <td>双语字幕</td>
+    <td>日语字幕</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/subtitles_english_and_japanese.webp" alt="英语和日语双语字幕" width="600"></td>
+    <td><img src="docs/images/subtitles_japanese.webp" alt="日语字幕" width="600"></td>
+  </tr>
+  <tr>
+    <td>笔记</td>
+    <td>设置</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/note_english.webp" alt="英文界面的 YouTube Digest 笔记" width="600"></td>
+    <td><img src="docs/images/setting_page.webp" alt="YouTube Digest 设置页面" width="600"></td>
+  </tr>
+</table>
+
 ## 让你的编程 Agent 帮你安装
 
 你不需要看懂代码，也不需要会使用命令行。把下面这段话发送给你的编程 Agent：
