@@ -183,6 +183,7 @@ YouTube Digest uses plain HTML, CSS, and JavaScript with no build step, so it is
 - Build a vocabulary notebook that saves a word, its sentence, meaning, and video timestamp.
 - Export notes and vocabulary to Markdown, CSV, Anki, or another study tool.
 - Add personal topic filters that highlight the chapters most relevant to a goal.
+- Add a visible entry in the AI provider settings card for configuring other AI models.
 - Add optional local-model support for a different privacy and cost tradeoff.
 - Improve accessibility with keyboard navigation, font controls, and higher-contrast themes.
 
