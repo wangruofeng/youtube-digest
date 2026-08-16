@@ -16,8 +16,8 @@ with no build step.
    `public_allowlist` inside `scripts/check-release.sh`. New runtime files
    (scripts, HTML, prompts) referenced by the manifest, HTML, or
    `loadPromptSection` fail `npm run check` until allowlisted.
-2. **No em dashes (`—`)** in README.md, README.zh-CN.md, manifest
-   descriptions, or UI copy dictionaries. Regex-enforced.
+2. **No em dashes (`—`)** in README.md, README.zh-CN.md, README.zh-TW.md,
+   manifest descriptions, or UI copy dictionaries. Regex-enforced.
 3. **`background.js` keeps exactly 4 `await requestAiCompletion({` call
    sites** (`tests/release.test.js` counts them). New AI features must reuse
    `callAiTranslation` or the four existing handlers.
@@ -31,8 +31,8 @@ with no build step.
 6. **DeepSeek is the only published provider.** Options page must not grow
    provider / base URL / model inputs (release test forbids them). Other
    models are supported through the Local remix customization prompt.
-7. **README.md and README.zh-CN.md are updated together**; release tests
-   couple their assertions (features, roadmap, install guidance).
+7. **README.md, README.zh-CN.md, and README.zh-TW.md are updated together**;
+   release tests couple their assertions (features, roadmap, install guidance).
 8. Tests load `sidepanel.js` / `background.js` into `node:vm` sandboxes with
    a fake `chrome`: top-level code must not touch `chrome.*` outside
    functions or the `DOMContentLoaded` handler. Cross-realm values need a
@@ -48,7 +48,8 @@ with no build step.
 
 ## Where to read more
 
-- `README.md` / `README.zh-CN.md`: features, install, cost estimates
+- `README.md` / `README.zh-CN.md` / `README.zh-TW.md`: features, install,
+  cost estimates
 - `PRIVACY.md`: exact data flow to Supadata and DeepSeek
 - `prompts/*.md`: every AI prompt with variable documentation
 - `docs/superpowers/specs/`: design notes for larger changes

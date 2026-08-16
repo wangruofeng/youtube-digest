@@ -17,17 +17,19 @@ test("manifest uses minimized install-time permissions", () => {
   assert.ok(!manifest.permissions.includes("activeTab"));
   assert.ok(manifest.host_permissions.includes("https://api.deepseek.com/*"));
   assert.equal(Object.hasOwn(manifest, "optional_host_permissions"), false);
-  assert.equal(manifest.version, "1.1.5");
+  assert.equal(manifest.version, "1.1.6");
 });
 
 test("release copy documents current scope without em dashes", () => {
   const readme = read("README.md");
   const chineseReadme = read("README.zh-CN.md");
+  const traditionalChineseReadme = read("README.zh-TW.md");
   const manifest = JSON.parse(read("manifest.json"));
   const packageJson = JSON.parse(read("package.json"));
 
   assert.doesNotMatch(readme, /—/);
   assert.doesNotMatch(chineseReadme, /—/);
+  assert.doesNotMatch(traditionalChineseReadme, /—/);
   assert.doesNotMatch(manifest.description, /—/);
   assert.doesNotMatch(packageJson.description, /—/);
 
@@ -35,7 +37,7 @@ test("release copy documents current scope without em dashes", () => {
   assert.equal(packageJson.name, "youtube-digest");
   assert.match(read("scripts/package-extension.sh"), /youtube-digest-v\$version\.zip/);
   assert.doesNotMatch(
-    [readme, chineseReadme, read("PRIVACY.md"), read("SECURITY.md")].join("\n"),
+    [readme, chineseReadme, traditionalChineseReadme, read("PRIVACY.md"), read("SECURITY.md")].join("\n"),
     /\bYT Digest\b/,
   );
   assert.match(
@@ -89,10 +91,54 @@ test("release copy documents current scope without em dashes", () => {
     /选择你刚才确定的那个准确项目文件夹，其中必须包含 `manifest\.json`/,
   );
   assert.match(chineseReadme, /不接受上游 issue 和 pull request/i);
-  // The multi-language translation roadmap item shipped: both READMEs now
+  // The multi-language translation roadmap item shipped: all READMEs now
   // document the selectable language pair instead of planning it.
   assert.match(chineseReadme, /13 种翻译语言/);
   assert.doesNotMatch(chineseReadme, /增加更多翻译语言/);
+
+  assert.match(
+    traditionalChineseReadme,
+    /^<p align="center">\n  <img src="\.\/assets\/readme\/hero\.zh-TW\.svg".*?alt="YouTube Digest：/,
+  );
+  assert.match(traditionalChineseReadme, /把每個 YouTube 影片變成一份可以深入學習的資料/);
+  assert.match(traditionalChineseReadme, /^## 讓你的程式設計 Agent 幫你安裝$/m);
+  assert.match(
+    traditionalChineseReadme,
+    /我選擇的長期保留資料夾[\s\S]*告訴我準確的完整路徑[\s\S]*第一次安裝時需要位置建議[\s\S]*`~\/Documents\/youtube-digest`[\s\S]*`%USERPROFILE%\\Documents\\youtube-digest`[\s\S]*不要假設我一定使用這些路徑/,
+  );
+  assert.match(
+    traditionalChineseReadme,
+    /如果移動或刪除原始碼資料夾，Chrome 中載入的擴充功能會失效，需要從新的位置重新載入。/,
+  );
+  assert.match(
+    traditionalChineseReadme,
+    /「載入未封裝的擴充功能」選擇你剛才確定的那個準確專案資料夾/,
+  );
+  assert.match(
+    traditionalChineseReadme,
+    /選擇你剛才確定的那個準確專案資料夾，其中必須包含 `manifest\.json`/,
+  );
+  assert.match(traditionalChineseReadme, /不接受上游 issue 和 pull request/i);
+  assert.match(traditionalChineseReadme, /13 種翻譯語言/);
+  assert.doesNotMatch(traditionalChineseReadme, /增加更多翻譯語言/);
+  assert.match(traditionalChineseReadme, /api-docs\.deepseek\.com\/quick_start\/pricing/i);
+  assert.match(traditionalChineseReadme, /api-docs\.deepseek\.com\/quick_start\/token_usage/i);
+  assert.match(traditionalChineseReadme, /api-docs\.deepseek\.com\/guides\/kv_cache/i);
+  assert.match(traditionalChineseReadme, /\u00a50\.02[\s\S]*\u00a50\.04/);
+  assert.match(traditionalChineseReadme, /2,935 個英文口語單字/);
+  assert.match(traditionalChineseReadme, /32,600 輸入 token/);
+  assert.match(traditionalChineseReadme, /\$0\.002[^\n]*\$0\.006 美元/);
+  assert.match(traditionalChineseReadme, /dash\.supadata\.ai\/auth\/sign-up/i);
+  assert.match(traditionalChineseReadme, /platform\.deepseek\.com\/api_keys/i);
+  assert.match(
+    traditionalChineseReadme,
+    /^### YouTube 影片上看不到 Digest 按鈕$/m,
+  );
+  assert.match(
+    traditionalChineseReadme,
+    /先在程式設計 Agent 中開啟 Chrome 透過「載入未封裝的擴充功能」載入的那個 YouTube Digest 專案資料夾/,
+  );
+  assert.match(traditionalChineseReadme, /發佈版本僅支援 DeepSeek V4 Flash/);
 
   assert.match(readme, /100 credits per month/i);
   assert.match(readme, /native transcript request uses \*\*1 credit\*\*/i);
@@ -162,7 +208,7 @@ test("release copy documents current scope without em dashes", () => {
   assert.match(optionsScript, /Edited prompt copied\./);
   assert.match(optionsScript, /migration\.migrated[\s\S]*storage\.set/);
 
-  const customizationPrompt = `Customize this local YouTube Digest workspace to use [PROVIDER] with [MODEL]. Work only in the current workspace. Before editing, verify that it contains manifest.json and that the manifest name is YouTube Digest. If verification fails, stop and ask me to open the extracted YouTube Digest project folder in my coding agent. Do not search other folders, edit a guessed copy, assume an installation path, or claim Chrome can reveal the absolute OS source path. Update the provider's API endpoint, request format, and minimum Chrome host permissions. Preserve bring-your-own-key and local Chrome storage. Never put API keys in source code, commits, logs, screenshots, this prompt, or chat; after the code is ready, tell me where to enter the key myself. Keep DeepSeek-only request fields and retry behavior isolated to DeepSeek. Handle provider-specific rules separately so one provider does not affect another. Update README.md, README.zh-CN.md, PRIVACY.md, SECURITY.md, and tests. Run npm test, npm run check, and npm run package. Then explain how to reload the unpacked extension and test it on a real YouTube video.`;
+  const customizationPrompt = `Customize this local YouTube Digest workspace to use [PROVIDER] with [MODEL]. Work only in the current workspace. Before editing, verify that it contains manifest.json and that the manifest name is YouTube Digest. If verification fails, stop and ask me to open the extracted YouTube Digest project folder in my coding agent. Do not search other folders, edit a guessed copy, assume an installation path, or claim Chrome can reveal the absolute OS source path. Update the provider's API endpoint, request format, and minimum Chrome host permissions. Preserve bring-your-own-key and local Chrome storage. Never put API keys in source code, commits, logs, screenshots, this prompt, or chat; after the code is ready, tell me where to enter the key myself. Keep DeepSeek-only request fields and retry behavior isolated to DeepSeek. Handle provider-specific rules separately so one provider does not affect another. Update README.md, README.zh-CN.md, README.zh-TW.md, PRIVACY.md, SECURITY.md, and tests. Run npm test, npm run check, and npm run package. Then explain how to reload the unpacked extension and test it on a real YouTube video.`;
   assert.ok(optionsPage.includes(`>${customizationPrompt}</textarea>`));
   assert.doesNotMatch(customizationPrompt, /Documents|USERPROFILE/);
 
@@ -183,6 +229,7 @@ test("release copy documents current scope without em dashes", () => {
   const publishedDocs = [
     readme,
     chineseReadme,
+    traditionalChineseReadme,
     read("PRIVACY.md"),
     read("SECURITY.md"),
   ].join("\n");
