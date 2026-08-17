@@ -26,9 +26,8 @@ YouTube Digest 是一個需要自行提供 API 金鑰的開源專案，透過 Gi
 
 ## 示範圖片
 
-| | |
-| :---: | :---: |
 | **總覽** | **日語總覽** |
+| :---: | :---: |
 | <img src="docs/images/overview_english.webp" alt="英文介面的 YouTube Digest 總覽" width="440"> | <img src="docs/images/overview_japanese.webp" alt="日語介面的 YouTube Digest 總覽" width="440"> |
 | **雙語字幕** | **日語字幕** |
 | <img src="docs/images/subtitles_english_and_japanese.webp" alt="英語和日語雙語字幕" width="440"> | <img src="docs/images/subtitles_japanese.webp" alt="日語字幕" width="440"> |

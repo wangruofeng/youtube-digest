@@ -26,9 +26,8 @@ YouTube Digest is a bring-your-own-key project installed locally from GitHub. It
 
 ## Screenshots
 
-| | |
-| :---: | :---: |
 | **Overview** | **Overview in Japanese** |
+| :---: | :---: |
 | <img src="docs/images/overview_english.webp" alt="YouTube Digest overview in English" width="440"> | <img src="docs/images/overview_japanese.webp" alt="YouTube Digest overview in Japanese" width="440"> |
 | **Bilingual subtitles** | **Japanese subtitles** |
 | <img src="docs/images/subtitles_english_and_japanese.webp" alt="English and Japanese bilingual subtitles" width="440"> | <img src="docs/images/subtitles_japanese.webp" alt="Japanese subtitles" width="440"> |
